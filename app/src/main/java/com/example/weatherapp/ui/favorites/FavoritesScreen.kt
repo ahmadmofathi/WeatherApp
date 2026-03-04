@@ -1,9 +1,11 @@
 package com.example.weatherapp.ui.favorites
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,9 +17,17 @@ import com.example.weatherapp.viewmodel.FavoritesViewModel
 
 @Composable
 fun FavoritesScreen(
-    viewModel: FavoritesViewModel
+    viewModel: FavoritesViewModel,
+    onAddClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    Row {
+        Button(
+            onClick = onAddClick
+        ) {
+            Text("Add Favorite")
+        }
+    }
     when(state){
         is FavoritesUiState.Loading -> {
             Box(
