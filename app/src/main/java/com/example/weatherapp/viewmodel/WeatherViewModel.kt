@@ -3,6 +3,8 @@ package com.example.weatherapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.remote.dto.Daily
+import com.example.weatherapp.data.remote.dto.Hourly
 import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.ui.weather.WeatherUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,18 @@ class WeatherViewModel(
 
     val uiState: StateFlow<WeatherUiState> = _uiState
 
+    private val _hourlyForecast =
+        MutableStateFlow<List<Hourly>>(emptyList())
+
+    val hourlyForecast: StateFlow<List<Hourly>> =
+        _hourlyForecast
+
+    private val _dailyForecast =
+        MutableStateFlow<List<Daily>>(emptyList())
+
+    val dailyForecast: StateFlow<List<Daily>> =
+        _dailyForecast
+
     fun loadWeather(lat: Double, lon: Double) {
 
         viewModelScope.launch {
@@ -29,6 +43,15 @@ class WeatherViewModel(
 
                 _uiState.value =
                     WeatherUiState.Success(response)
+
+                val hourly = repository.getHourlyForecast(lat, lon)
+
+                _hourlyForecast.value = hourly.hourly.take(12)
+
+                val daily = repository.getDailyForecast(lat, lon)
+
+                _dailyForecast.value = daily.daily.take(5)
+
 
             } catch (e: Exception) {
 

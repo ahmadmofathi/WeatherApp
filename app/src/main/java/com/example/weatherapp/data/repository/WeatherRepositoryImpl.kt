@@ -3,6 +3,8 @@ package com.example.weatherapp.data.repository
 import com.example.weatherapp.data.local.favorite.FavoriteDao
 import com.example.weatherapp.data.local.favorite.FavoriteLocation
 import com.example.weatherapp.data.remote.WeatherApi
+import com.example.weatherapp.data.remote.dto.OneCallDailyResponse
+import com.example.weatherapp.data.remote.dto.OneCallResponse
 import kotlinx.coroutines.flow.Flow
 
 class WeatherRepositoryImpl(
@@ -28,4 +30,20 @@ class WeatherRepositoryImpl(
 
     override suspend fun getWeather(lat: Double, lon: Double) =
         api.getForecast(lat, lon)
+
+    override suspend fun getHourlyForecast(
+        lat: Double,
+        lon: Double
+    ): OneCallResponse {
+
+        return api.getHourlyForecast(lat, lon)
+    }
+
+    override suspend fun getDailyForecast(
+        lat: Double,
+        lon: Double
+    ): OneCallDailyResponse {
+
+        return api.getDailyForecast(lat, lon)
+    }
 }
