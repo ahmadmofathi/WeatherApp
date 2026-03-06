@@ -10,8 +10,8 @@ interface WeatherApi {
     suspend fun getForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("units") units: String,
-        @Query("lang") lang: String,
+        @Query("units") units: String = "metric",
+        @Query("lang") lang: String = "en",
         @Query("appid") apiKey: String = Constants.API_KEY
     ): ForecastResponse
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
@@ -17,14 +18,18 @@ import com.example.weatherapp.data.local.favorite.FavoriteLocation
 @Composable
 fun FavoriteItem(
     location: FavoriteLocation,
+    onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(text = location.cityName)
 
         IconButton(onClick = onDelete) {

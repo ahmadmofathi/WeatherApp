@@ -6,4 +6,6 @@ sealed class Screen(val route: String) {
 
     object Map : Screen("map")
 
+    object Weather : Screen("weather/{lat}/{lon}")
+
 }

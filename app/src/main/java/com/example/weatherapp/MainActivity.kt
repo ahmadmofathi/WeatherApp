@@ -9,11 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.example.weatherapp.data.local.WeatherDatabase
+import com.example.weatherapp.data.remote.RetrofitInstance
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
 import com.example.weatherapp.navigation.AppNavigation
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.viewmodel.FavoritesViewModel
 import com.example.weatherapp.viewmodel.FavoritesViewModelFactory
+import com.example.weatherapp.viewmodel.WeatherViewModel
+import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 import org.osmdroid.config.Configuration
 
 class MainActivity : ComponentActivity() {
@@ -46,13 +49,27 @@ fun WeatherApp(context: Context) {
         ).build()
     }
 
-    val repository = remember {
-        WeatherRepositoryImpl(database.favoriteDao())
+    val api = remember {
+        RetrofitInstance.api
     }
 
-    val viewModel: FavoritesViewModel = viewModel(
+    val repository = remember {
+        WeatherRepositoryImpl(
+            database.favoriteDao(),
+            api
+        )
+    }
+
+    val favoritesViewModel: FavoritesViewModel = viewModel(
         factory = FavoritesViewModelFactory(repository)
     )
+    val weatherViewModel: WeatherViewModel = viewModel(
+        factory = WeatherViewModelFactory(repository)
+    )
 
-    AppNavigation(viewModel = viewModel)
+    AppNavigation(
+        favoritesViewModel = favoritesViewModel,
+        weatherViewModel = weatherViewModel
+    )
+
 }

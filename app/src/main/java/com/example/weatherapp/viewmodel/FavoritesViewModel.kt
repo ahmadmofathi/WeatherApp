@@ -1,5 +1,6 @@
 package com.example.weatherapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -51,6 +52,31 @@ class FavoritesViewModel(
     fun removeFavorite(location: FavoriteLocation) {
         viewModelScope.launch {
             repository.delete(location)
+        }
+    }
+
+    fun addFavoriteFromCoordinates(lat: Double, lon: Double) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val cityName = repository.getCityName(lat, lon)
+
+                repository.insert(
+                    FavoriteLocation(
+                        cityName = cityName,
+                        latitude = lat,
+                        longitude = lon
+                    )
+                )
+
+            } catch (e: Exception) {
+                Log.e("WeatherError", e.toString())
+
+                _uiState.value =
+                    FavoritesUiState.Error(e.message ?: "Unknown error")
+            }
         }
     }
 }

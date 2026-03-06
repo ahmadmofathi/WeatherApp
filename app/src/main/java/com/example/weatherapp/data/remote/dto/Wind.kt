@@ -3,5 +3,5 @@ package com.example.weatherapp.data.remote.dto
 data class Wind(
     val speed: Double,
     val deg: Int,
-    val gust: Double
+    val gust: Double?
 )

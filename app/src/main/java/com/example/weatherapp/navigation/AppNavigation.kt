@@ -9,10 +9,15 @@ import com.example.weatherapp.ui.map.MapScreen
 import com.example.weatherapp.viewmodel.FavoritesViewModel
 import com.example.weatherapp.data.local.favorite.FavoriteLocation
 import androidx.compose.ui.platform.LocalContext
-import com.example.weatherapp.utils.getCityName
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherapp.ui.weather.WeatherScreen
+import com.example.weatherapp.viewmodel.WeatherViewModel
+import com.example.weatherapp.viewmodel.WeatherViewModelFactory
+
 @Composable
 fun AppNavigation(
-    viewModel: FavoritesViewModel
+    favoritesViewModel: FavoritesViewModel,
+    weatherViewModel: WeatherViewModel
 ) {
 
     val navController = rememberNavController()
@@ -25,9 +30,12 @@ fun AppNavigation(
         composable(Screen.Favorites.route) {
 
             FavoritesScreen(
-                viewModel = viewModel,
+                viewModel = favoritesViewModel,
                 onAddClick = {
                     navController.navigate(Screen.Map.route)
+                },
+                onFavoriteClick = { lat, lon ->
+                    navController.navigate("weather/$lat/$lon")
                 }
             )
         }
@@ -38,18 +46,32 @@ fun AppNavigation(
 
             MapScreen { lat, lon ->
 
-                val cityName = getCityName(context, lat, lon)
-
-                viewModel.addFavorite(
-                    FavoriteLocation(
-                        cityName = cityName,
-                        latitude = lat,
-                        longitude = lon
-                    )
-                )
+                favoritesViewModel.addFavoriteFromCoordinates(lat, lon)
 
                 navController.popBackStack()
             }
+        }
+
+        composable(
+            route = "weather/{lat}/{lon}"
+        ) { backStackEntry ->
+
+            val lat =
+                backStackEntry.arguments
+                    ?.getString("lat")!!
+                    .toDouble()
+
+            val lon =
+                backStackEntry.arguments
+                    ?.getString("lon")!!
+                    .toDouble()
+
+
+            WeatherScreen(
+                lat = lat,
+                lon = lon,
+                viewModel = weatherViewModel
+            )
         }
     }
 }
