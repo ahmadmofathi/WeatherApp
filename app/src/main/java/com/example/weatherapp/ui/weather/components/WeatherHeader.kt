@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,7 +27,10 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun WeatherHeader(
-    city: String
+    city: String,
+    date: String,
+    time: String,
+    onMenuClick: () -> Unit
 ) {
 
     Column(
@@ -41,7 +45,7 @@ fun WeatherHeader(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            IconButton(onClick = { }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(Icons.Default.Menu, contentDescription = null)
             }
 
@@ -55,7 +59,20 @@ fun WeatherHeader(
             style = MaterialTheme.typography.titleMedium,
             letterSpacing = 3.sp
         )
-
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ){
+            Text(
+                text = date,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = time,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {

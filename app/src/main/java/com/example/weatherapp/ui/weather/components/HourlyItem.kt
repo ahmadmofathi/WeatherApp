@@ -35,7 +35,7 @@ fun HourlyItem(
             CardDefaults.cardColors(),
         shape = RoundedCornerShape(32.dp),
         modifier = Modifier
-            .width(70.dp)
+            .width(80.dp)
             .padding(6.dp)
     ) {
 
@@ -44,7 +44,7 @@ fun HourlyItem(
             modifier = Modifier.padding(12.dp)
         ) {
 
-            Text(time)
+            Text(time, maxLines = 1)
 
             AsyncImage(
                 model = iconUrl,

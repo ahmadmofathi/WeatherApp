@@ -13,10 +13,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun WeatherStatItem(
     title: String,
-    value: String
+    value: String,
+    modifier: Modifier = Modifier
 ) {
 
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

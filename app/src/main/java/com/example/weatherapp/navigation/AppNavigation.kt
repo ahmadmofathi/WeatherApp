@@ -5,14 +5,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.ui.favorites.FavoritesScreen
+import com.example.weatherapp.ui.home.HomeScreen
 import com.example.weatherapp.ui.map.MapScreen
 import com.example.weatherapp.viewmodel.FavoritesViewModel
-import com.example.weatherapp.data.local.favorite.FavoriteLocation
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherapp.ui.weather.WeatherScreen
 import com.example.weatherapp.viewmodel.WeatherViewModel
-import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 
 @Composable
 fun AppNavigation(
@@ -24,9 +20,20 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Favorites.route
+        startDestination = Screen.Home.route
     ) {
 
+        // HOME
+        composable(Screen.Home.route) {
+
+            HomeScreen(
+                favoritesViewModel = favoritesViewModel,
+                weatherViewModel = weatherViewModel,
+                navController = navController
+            )
+        }
+
+        // FAVORITES
         composable(Screen.Favorites.route) {
 
             FavoritesScreen(
@@ -35,14 +42,16 @@ fun AppNavigation(
                     navController.navigate(Screen.Map.route)
                 },
                 onFavoriteClick = { lat, lon ->
-                    navController.navigate("weather/$lat/$lon")
+
+                    weatherViewModel.loadWeather(lat, lon)
+
+                    navController.popBackStack()
                 }
             )
         }
 
+        // MAP
         composable(Screen.Map.route) {
-
-            val context = LocalContext.current
 
             MapScreen { lat, lon ->
 
@@ -50,28 +59,6 @@ fun AppNavigation(
 
                 navController.popBackStack()
             }
-        }
-
-        composable(
-            route = "weather/{lat}/{lon}"
-        ) { backStackEntry ->
-
-            val lat =
-                backStackEntry.arguments
-                    ?.getString("lat")!!
-                    .toDouble()
-
-            val lon =
-                backStackEntry.arguments
-                    ?.getString("lon")!!
-                    .toDouble()
-
-
-            WeatherScreen(
-                lat = lat,
-                lon = lon,
-                viewModel = weatherViewModel
-            )
         }
     }
 }

@@ -27,10 +27,8 @@ fun WeatherHero(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        AsyncImage(
-            model = iconUrl,
-            contentDescription = null,
-            modifier = Modifier.size(120.dp)
+        WeatherAnimation(
+            weatherType = iconUrl
         )
 
         Text(
