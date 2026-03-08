@@ -12,8 +12,8 @@ interface WeatherApi {
     suspend fun getForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("units") units: String = "metric",
-        @Query("lang") lang: String = "en",
+        @Query("units") units: String,
+        @Query("lang") lang: String,
         @Query("appid") apiKey: String = Constants.API_KEY
     ): ForecastResponse
 
@@ -22,7 +22,7 @@ interface WeatherApi {
     suspend fun getHourlyForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("units") units: String = "metric",
+        @Query("units") units: String,
         @Query("exclude") exclude: String = "minutely,daily,alerts",
         @Query("appid") apiKey: String = Constants.API_KEY
     ): OneCallResponse
@@ -31,7 +31,7 @@ interface WeatherApi {
     suspend fun getDailyForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("units") units: String = "metric",
+        @Query("units") units: String,
         @Query("exclude") exclude: String = "minutely,hourly,alerts",
         @Query("appid") apiKey: String = Constants.API_KEY
     ): OneCallDailyResponse

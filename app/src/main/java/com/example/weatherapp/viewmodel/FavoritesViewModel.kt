@@ -61,7 +61,13 @@ class FavoritesViewModel(
 
             try {
 
-                val cityName = repository.getCityName(lat, lon)
+                val cityName =
+                    repository.getCityName(
+                        lat = lat,
+                        lon = lon,
+                        unit = "metric",
+                        lang = "en"
+                    )
 
                 repository.insert(
                     FavoriteLocation(
@@ -72,10 +78,9 @@ class FavoritesViewModel(
                 )
 
             } catch (e: Exception) {
+
                 Log.e("WeatherError", e.toString())
 
-                _uiState.value =
-                    FavoritesUiState.Error(e.message ?: "Unknown error")
             }
         }
     }

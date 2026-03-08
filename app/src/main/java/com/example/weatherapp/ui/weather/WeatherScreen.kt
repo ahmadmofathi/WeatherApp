@@ -43,7 +43,7 @@ fun WeatherScreen(
         }
     )
 
-    LaunchedEffect(lat, lon) {
+    LaunchedEffect(Unit) {
         viewModel.loadWeather(lat, lon)
     }
 
@@ -158,7 +158,9 @@ fun WeatherScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        LazyRow {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
 
                             items(hourly) { hour ->
 
@@ -190,7 +192,7 @@ fun WeatherScreen(
                         Spacer(modifier = Modifier.height(12.dp))
                     }
 
-                    items(daily) { day ->
+                    items(daily, key = { it.dt }) { day ->
 
                         val icon =
                             day.weather[0].icon

@@ -10,8 +10,8 @@ interface WeatherRepository {
     fun getFavorites(): Flow<List<FavoriteLocation>>
     suspend fun insert(location: FavoriteLocation)
     suspend fun delete(location: FavoriteLocation)
-    suspend fun getCityName(lat: Double, lon: Double): String
-    suspend fun getWeather(lat: Double, lon: Double): ForecastResponse
-    suspend fun getHourlyForecast(lat: Double, lon: Double): OneCallResponse
-    suspend fun getDailyForecast(lat: Double, lon: Double ): OneCallDailyResponse
+    suspend fun getCityName(lat: Double, lon: Double, unit: String, lang: String): String
+    suspend fun getWeather(lat: Double, lon: Double, unit: String, lang: String): ForecastResponse
+    suspend fun getHourlyForecast(lat: Double, lon: Double, unit: String): OneCallResponse
+    suspend fun getDailyForecast(lat: Double, lon: Double, unit: String): OneCallDailyResponse
 }

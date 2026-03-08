@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.weatherapp.ui.weather.WeatherScreen
 import com.example.weatherapp.utils.LocationHelper
+import com.example.weatherapp.utils.scheduleWeatherAlerts
 import com.example.weatherapp.viewmodel.FavoritesViewModel
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import kotlinx.coroutines.launch
@@ -43,9 +44,7 @@ fun HomeScreen(
             if (granted) {
 
                 locationHelper.getCurrentLocation { lat, lon ->
-
                     weatherViewModel.loadWeather(lat, lon)
-
                 }
             }
         }
@@ -87,6 +86,9 @@ fun HomeScreen(
                     },
 
                     onSettingsClick = {
+                        scope.launch {
+                            drawerState.close()
+                        }
                         navController.navigate("settings")
                     },
 

@@ -3,6 +3,7 @@ package com.example.weatherapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.preferences.SettingsDataStore
 import com.example.weatherapp.data.remote.dto.Daily
 import com.example.weatherapp.data.remote.dto.Hourly
 import com.example.weatherapp.data.repository.WeatherRepository
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(
-    private val repository: WeatherRepository
+    private val repository: WeatherRepository,
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModel() {
 
     private val _uiState =
@@ -33,6 +35,24 @@ class WeatherViewModel(
     private var lastLat: Double = 0.0
     private var lastLon: Double = 0.0
 
+    private var unit: String = "metric"
+    private var language: String = "en"
+
+    init {
+
+        viewModelScope.launch {
+            settingsDataStore.temperatureUnit.collect {
+                unit = it
+            }
+        }
+
+        viewModelScope.launch {
+            settingsDataStore.language.collect {
+                language = it
+            }
+        }
+    }
+
     fun loadWeather(lat: Double, lon: Double) {
 
         lastLat = lat
@@ -45,19 +65,32 @@ class WeatherViewModel(
             try {
 
                 val response =
-                    repository.getWeather(lat, lon)
+                    repository.getWeather(
+                        lat,
+                        lon,
+                        unit,
+                        language
+                    )
 
                 _uiState.value =
                     WeatherUiState.Success(response)
 
                 val hourly =
-                    repository.getHourlyForecast(lat, lon)
+                    repository.getHourlyForecast(
+                        lat,
+                        lon,
+                        unit
+                    )
 
                 _hourlyForecast.value =
                     hourly.hourly.take(12)
 
                 val daily =
-                    repository.getDailyForecast(lat, lon)
+                    repository.getDailyForecast(
+                        lat,
+                        lon,
+                        unit
+                    )
 
                 _dailyForecast.value =
                     daily.daily.take(5)
@@ -74,6 +107,9 @@ class WeatherViewModel(
         }
     }
 
+    fun getLastLocation(): Pair<Double, Double> {
+        return Pair(lastLat, lastLon)
+    }
     fun reloadWeather() {
         loadWeather(lastLat, lastLon)
     }
@@ -81,13 +117,18 @@ class WeatherViewModel(
 
 
 class WeatherViewModelFactory(
-    private val repository: WeatherRepository
+    private val repository: WeatherRepository,
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
-            return WeatherViewModel(repository) as T
+
+            return WeatherViewModel(
+                repository,
+                settingsDataStore
+            ) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

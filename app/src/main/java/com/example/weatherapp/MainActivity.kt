@@ -18,6 +18,10 @@ import com.example.weatherapp.viewmodel.FavoritesViewModelFactory
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 import org.osmdroid.config.Configuration
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
+import com.example.weatherapp.data.preferences.SettingsDataStore
 
 class MainActivity : ComponentActivity() {
 
@@ -29,11 +33,30 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             applicationContext.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
         )
-
+        createNotificationChannel()
         setContent {
             WeatherAppTheme {
                 WeatherApp(context = this)
             }
+        }
+    }
+
+
+
+    private fun createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val channel = NotificationChannel(
+                "weather_alerts",
+                "Weather Alerts",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            val manager =
+                getSystemService(NotificationManager::class.java)
+
+            manager.createNotificationChannel(channel)
         }
     }
 }
@@ -59,12 +82,15 @@ fun WeatherApp(context: Context) {
             api
         )
     }
+    val settingsDataStore = remember {
+        SettingsDataStore(context)
+    }
 
     val favoritesViewModel: FavoritesViewModel = viewModel(
         factory = FavoritesViewModelFactory(repository)
     )
     val weatherViewModel: WeatherViewModel = viewModel(
-        factory = WeatherViewModelFactory(repository)
+        factory = WeatherViewModelFactory(repository, settingsDataStore)
     )
 
     AppNavigation(
@@ -73,3 +99,8 @@ fun WeatherApp(context: Context) {
     )
 
 }
+
+
+
+
+
