@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters
 import com.example.weatherapp.R
 import com.example.weatherapp.data.preferences.SettingsDataStore
 import com.example.weatherapp.data.remote.RetrofitInstance
+import com.example.weatherapp.model.WeatherCondition
 import kotlinx.coroutines.flow.first
 
 class WeatherAlertWorker(
@@ -29,16 +30,20 @@ class WeatherAlertWorker(
 
             val alertsEnabled = dataStore.alertsEnabled.first()
             val selectedCondition = dataStore.alertCondition.first()
+            val unit = dataStore.temperatureUnit.first()
 
             if (!alertsEnabled) {
                 return Result.success()
             }
 
+            // Map kelvin to standard for API
+            val apiUnit = if (unit == "kelvin") "standard" else unit
+
             val response =
                 RetrofitInstance.api.getHourlyForecast(
                     lat = lat,
                     lon = lon,
-                    units = "metric"
+                    units = apiUnit
                 )
 
             val nextHour =
@@ -47,11 +52,24 @@ class WeatherAlertWorker(
             val condition =
                 nextHour?.weather?.firstOrNull()?.main ?: ""
 
-            if (condition == selectedCondition) {
+            if (condition.equals(selectedCondition, ignoreCase = true)) {
 
-                sendNotification(
-                    "$condition expected in the next hour"
+                // Use localized condition name via WeatherCondition enum
+                val weatherCondition = WeatherCondition.fromApiName(condition)
+                val conditionLabel = weatherCondition?.let {
+                    applicationContext.getString(it.labelResId)
+                } ?: condition
+
+                val message = applicationContext.getString(
+                    R.string.condition_expected,
+                    conditionLabel
                 )
+
+                val title = applicationContext.getString(
+                    R.string.weather_alert_notification_title
+                )
+
+                sendNotification(title, message)
             }
 
             Result.success()
@@ -62,7 +80,7 @@ class WeatherAlertWorker(
         }
     }
 
-    private fun sendNotification(message: String) {
+    private fun sendNotification(title: String, message: String) {
 
         if (
             ContextCompat.checkSelfPermission(
@@ -79,7 +97,7 @@ class WeatherAlertWorker(
                 "weather_alerts"
             )
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Weather Alert")
+                .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 

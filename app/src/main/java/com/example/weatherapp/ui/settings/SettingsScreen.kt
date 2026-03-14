@@ -98,34 +98,29 @@ fun SettingsScreen(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    com.example.weatherapp.model.WeatherCondition.selectableConditions.take(5).forEach { cond ->
+                        FilterChip(
+                            selected = alertCondition == cond.apiName,
+                            onClick = { onConditionChanged(cond.apiName) },
+                            label = { Text(stringResource(cond.labelResId)) },
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+                }
 
-                    FilterChip(
-                        selected = alertCondition == "Rain",
-                        onClick = { onConditionChanged("Rain") },
-                        label = { Text(stringResource(R.string.rain)) },
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                Spacer(modifier = Modifier.height(6.dp))
 
-                    FilterChip(
-                        selected = alertCondition == "Snow",
-                        onClick = { onConditionChanged("Snow") },
-                        label = { Text(stringResource(R.string.snow)) },
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    FilterChip(
-                        selected = alertCondition == "Clear",
-                        onClick = { onConditionChanged("Clear") },
-                        label = { Text(stringResource(R.string.clear)) },
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    FilterChip(
-                        selected = alertCondition == "Wind",
-                        onClick = { onConditionChanged("Wind") },
-                        label = { Text(stringResource(R.string.wind)) },
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    com.example.weatherapp.model.WeatherCondition.selectableConditions.drop(5).forEach { cond ->
+                        FilterChip(
+                            selected = alertCondition == cond.apiName,
+                            onClick = { onConditionChanged(cond.apiName) },
+                            label = { Text(stringResource(cond.labelResId)) },
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
                 }
             }
         }

@@ -12,7 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.R
+import com.example.weatherapp.model.WeatherCondition
 import com.example.weatherapp.services.AlarmService
 import com.example.weatherapp.utils.scheduleSnooze
 
@@ -88,6 +90,10 @@ fun AlarmScreen(
     onDismiss: () -> Unit,
     onSnooze: () -> Unit
 ) {
+    // Use WeatherCondition enum for consistent emoji/colors
+    val weatherCondition = WeatherCondition.fromApiName(condition)
+    val weatherEmoji = weatherCondition?.emoji ?: "⚠️"
+
     val gradientColors = when (condition.lowercase()) {
         "rain" -> listOf(Color(0xFF1A237E), Color(0xFF0D47A1), Color(0xFF1565C0))
         "snow" -> listOf(Color(0xFF37474F), Color(0xFF546E7A), Color(0xFF78909C))
@@ -97,16 +103,10 @@ fun AlarmScreen(
         else -> listOf(Color(0xFF311B92), Color(0xFF4527A0), Color(0xFF5E35B1))
     }
 
-    val weatherEmoji = when (condition.lowercase()) {
-        "rain" -> "🌧️"
-        "snow" -> "❄️"
-        "wind" -> "💨"
-        "clear" -> "☀️"
-        "clouds" -> "☁️"
-        "thunderstorm" -> "⛈️"
-        "drizzle" -> "🌦️"
-        else -> "⚠️"
-    }
+    // Get localized condition name
+    val localizedCondition = weatherCondition?.let {
+        stringResource(it.labelResId)
+    } ?: condition
 
     Box(
         modifier = Modifier
@@ -128,9 +128,9 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Title
+            // Title — localized
             Text(
-                text = "Weather Alarm!",
+                text = stringResource(R.string.weather_alarm_title),
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -139,9 +139,9 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Condition
+            // Condition — localized with format string
             Text(
-                text = "$condition detected in your area",
+                text = stringResource(R.string.condition_detected, localizedCondition),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White.copy(alpha = 0.9f)
                 ),
@@ -150,7 +150,7 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(64.dp))
 
-            // Dismiss Button
+            // Dismiss Button — localized
             Button(
                 onClick = onDismiss,
                 modifier = Modifier
@@ -163,7 +163,7 @@ fun AlarmScreen(
                 )
             ) {
                 Text(
-                    text = "Dismiss",
+                    text = stringResource(R.string.dismiss),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -171,7 +171,7 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Snooze Button
+            // Snooze Button — localized
             OutlinedButton(
                 onClick = onSnooze,
                 modifier = Modifier
@@ -188,7 +188,7 @@ fun AlarmScreen(
                 )
             ) {
                 Text(
-                    text = "Snooze (10 min)",
+                    text = stringResource(R.string.snooze_10_min),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )

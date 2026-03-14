@@ -32,7 +32,7 @@
     <string name="alert_condition">نوع التنبيه</string>
     <string name="rain">مطر</string>
     <string name="snow">ثلج</string>
-    <string name="clear">صافي</string>
+    <string name="clear">صحو</string>
 
     <!-- شاشة التنبيهات -->
     <string name="create_weather_alarm">إنشاء تنبيه طقس</string>
@@ -75,4 +75,26 @@
     <!-- تبديل التنبيه -->
     <string name="alarm_active">مُفعّل</string>
     <string name="alarm_inactive">غير مُفعّل</string>
+
+    <!-- حالات الطقس -->
+    <string name="drizzle">رذاذ</string>
+    <string name="mist">ضباب خفيف</string>
+    <string name="smoke">دخان</string>
+    <string name="haze">غبش</string>
+    <string name="dust">غبار</string>
+    <string name="fog">ضباب</string>
+    <string name="sand">رمال</string>
+    <string name="ash">رماد</string>
+    <string name="squall">عاصفة</string>
+    <string name="tornado">إعصار</string>
+
+    <!-- حوار حذف التنبيه -->
+    <string name="delete_alarm_title">حذف التنبيه</string>
+    <string name="delete_alarm_message">هل أنت متأكد من حذف هذا التنبيه؟</string>
+
+    <!-- شاشة التنبيه / الإشعارات -->
+    <string name="weather_alarm_title">تنبيه طقس!</string>
+    <string name="condition_detected">تم رصد %s في منطقتك</string>
+    <string name="weather_alert_notification_title">تنبيه الطقس</string>
+    <string name="condition_expected">%s متوقعة خلال الساعة القادمة</string>
 </resources>

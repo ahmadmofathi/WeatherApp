@@ -75,4 +75,26 @@
     <!-- Alarm Toggle -->
     <string name="alarm_active">Active</string>
     <string name="alarm_inactive">Inactive</string>
+
+    <!-- Weather Conditions (all OpenWeatherMap types) -->
+    <string name="drizzle">Drizzle</string>
+    <string name="mist">Mist</string>
+    <string name="smoke">Smoke</string>
+    <string name="haze">Haze</string>
+    <string name="dust">Dust</string>
+    <string name="fog">Fog</string>
+    <string name="sand">Sand</string>
+    <string name="ash">Ash</string>
+    <string name="squall">Squall</string>
+    <string name="tornado">Tornado</string>
+
+    <!-- Delete Alarm Dialog -->
+    <string name="delete_alarm_title">Delete Alarm</string>
+    <string name="delete_alarm_message">Are you sure you want to delete this alarm?</string>
+
+    <!-- Alarm Activity / Notifications -->
+    <string name="weather_alarm_title">Weather Alarm!</string>
+    <string name="condition_detected">%s detected in your area</string>
+    <string name="weather_alert_notification_title">Weather Alert</string>
+    <string name="condition_expected">%s expected in the next hour</string>
 </resources>

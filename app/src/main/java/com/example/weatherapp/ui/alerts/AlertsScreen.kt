@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.data.local.alert.WeatherAlert
+import com.example.weatherapp.model.WeatherCondition
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,17 +44,50 @@ fun AlertsScreen(
 
     val formatter = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
 
-    // Conditions with their string resource IDs
-    data class ConditionItem(val key: String, val labelResId: Int, val emoji: String)
+    // Delete confirmation dialog state
+    var alertToDelete by remember { mutableStateOf<WeatherAlert?>(null) }
 
-    val conditions = listOf(
-        ConditionItem("Rain", R.string.rain, "🌧️"),
-        ConditionItem("Snow", R.string.snow, "❄️"),
-        ConditionItem("Wind", R.string.wind, "💨"),
-        ConditionItem("Clear", R.string.clear, "☀️"),
-        ConditionItem("Clouds", R.string.clouds, "☁️"),
-        ConditionItem("Thunderstorm", R.string.thunderstorm, "⛈️")
-    )
+    // Delete confirmation dialog
+    if (alertToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { alertToDelete = null },
+            title = {
+                Text(
+                    text = stringResource(R.string.delete_alarm_title),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.delete_alarm_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        alertToDelete?.let { onDeleteAlert(it) }
+                        alertToDelete = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { alertToDelete = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    // Use WeatherCondition enum for selectable conditions
+    val conditions = WeatherCondition.selectableConditions
 
     LazyColumn(
         modifier = Modifier
@@ -82,16 +116,16 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        // Condition chips — row 1
+        // Condition chips — row 1 (first 5)
         item {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                conditions.take(3).forEach { condition ->
+                conditions.take(5).forEach { condition ->
                     FilterChip(
-                        selected = selectedCondition == condition.key,
-                        onClick = { selectedCondition = condition.key },
+                        selected = selectedCondition == condition.apiName,
+                        onClick = { selectedCondition = condition.apiName },
                         label = {
                             Text("${condition.emoji} ${stringResource(condition.labelResId)}")
                         },
@@ -102,15 +136,15 @@ fun AlertsScreen(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Condition chips — row 2
+            // Condition chips — row 2 (next 5)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                conditions.drop(3).forEach { condition ->
+                conditions.drop(5).forEach { condition ->
                     FilterChip(
-                        selected = selectedCondition == condition.key,
-                        onClick = { selectedCondition = condition.key },
+                        selected = selectedCondition == condition.apiName,
+                        onClick = { selectedCondition = condition.apiName },
                         label = {
                             Text("${condition.emoji} ${stringResource(condition.labelResId)}")
                         },
@@ -303,7 +337,7 @@ fun AlertsScreen(
             AlertItem(
                 alert = alert,
                 formatter = formatter,
-                onDelete = { onDeleteAlert(alert) },
+                onDelete = { alertToDelete = alert },
                 onToggle = { isActive -> onToggleAlert(alert, isActive) }
             )
         }
@@ -321,11 +355,9 @@ fun AlertItem(
     onDelete: () -> Unit,
     onToggle: (Boolean) -> Unit
 ) {
-    val conditionEmojis = mapOf(
-        "Rain" to "🌧️", "Snow" to "❄️", "Wind" to "💨",
-        "Clear" to "☀️", "Clouds" to "☁️", "Thunderstorm" to "⛈️"
-    )
-    val emoji = conditionEmojis[alert.condition] ?: "⚠️"
+    // Use WeatherCondition enum for emoji lookup
+    val condition = WeatherCondition.fromApiName(alert.condition)
+    val emoji = condition?.emoji ?: "⚠️"
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -345,8 +377,13 @@ fun AlertItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
+                // Use localized condition label
+                val conditionLabel = condition?.let {
+                    stringResource(it.labelResId)
+                } ?: alert.condition
+
                 Text(
-                    text = "$emoji ${alert.condition}",
+                    text = "$emoji $conditionLabel",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     )
