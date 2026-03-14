@@ -65,6 +65,7 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.compose.material:material:1.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,9 +1,11 @@
 package com.example.weatherapp.ui.weather.components
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -13,17 +15,16 @@ import com.example.weatherapp.R
 
 @Composable
 fun WeatherAnimation(
-    weatherType: String
+    weatherType: String,
+    modifier: Modifier = Modifier
 ) {
 
     val animationRes = when (weatherType) {
-
         "Clear" -> R.raw.sunny
-
         "Clouds" -> R.raw.cloudy
-
-        "Rain" -> R.raw.rain
-
+        "Rain", "Drizzle" -> R.raw.rain
+        "Thunderstorm" -> R.raw.rain
+        "Snow" -> R.raw.cloudy
         else -> R.raw.cloudy
     }
 
@@ -34,6 +35,6 @@ fun WeatherAnimation(
     LottieAnimation(
         composition = composition,
         iterations = LottieConstants.IterateForever,
-        modifier = Modifier.size(160.dp)
+        modifier = modifier.size(200.dp)
     )
 }

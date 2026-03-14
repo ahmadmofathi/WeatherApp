@@ -1,30 +1,19 @@
 package com.example.weatherapp.ui.weather.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 
 @Composable
 fun WeatherHeader(
@@ -41,46 +30,85 @@ fun WeatherHeader(
         modifier = Modifier.fillMaxWidth()
     ) {
 
+        // Top action bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = null)
+                Icon(
+                    Icons.Rounded.Menu,
+                    contentDescription = "Menu",
+                    tint = Color.White
+                )
             }
 
-            IconButton(onClick = onAddFavoriteClick) {
-                Icon(Icons.Default.FavoriteBorder, null)
-            }
+            Row {
+                IconButton(onClick = onAddFavoriteClick) {
+                    Icon(
+                        Icons.Default.FavoriteBorder,
+                        contentDescription = "Add to favorites",
+                        tint = Color.White
+                    )
+                }
 
-            IconButton(onClick = onSearchClick) {
-                Icon(Icons.Default.Search, contentDescription = null)
+                IconButton(onClick = onSearchClick) {
+                    Icon(
+                        Icons.Rounded.Search,
+                        contentDescription = "Search",
+                        tint = Color.White
+                    )
+                }
             }
-
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // City name
         Text(
-            text = city.uppercase(),
-            style = MaterialTheme.typography.titleMedium,
-            letterSpacing = 3.sp
+            text = city,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            )
         )
-        Row (
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Date and time
+        Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ){
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
                 text = date,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White.copy(alpha = 0.7f)
+                )
             )
-            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "•",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White.copy(alpha = 0.5f)
+                )
+            )
+
             Text(
                 text = time,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White.copy(alpha = 0.7f)
+                )
             )
         }
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // Location badge
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -88,14 +116,18 @@ fun WeatherHeader(
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = null,
-                modifier = Modifier.size(14.dp)
+                modifier = Modifier.size(12.dp),
+                tint = Color.White.copy(alpha = 0.5f)
             )
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(2.dp))
 
             Text(
-                text = "CURRENT",
-                style = MaterialTheme.typography.labelSmall
+                text = "Current Location",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = Color.White.copy(alpha = 0.5f),
+                    letterSpacing = 1.sp
+                )
             )
         }
     }

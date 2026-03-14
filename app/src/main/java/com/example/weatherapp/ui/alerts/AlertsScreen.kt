@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.data.local.alert.WeatherAlert
 import java.text.SimpleDateFormat
@@ -34,7 +36,6 @@ fun AlertsScreen(
 
     var selectedCondition by remember { mutableStateOf("Rain") }
 
-    val calendar = remember { Calendar.getInstance() }
     var startTime by remember { mutableStateOf(System.currentTimeMillis() + 60_000L) }
     var endTime by remember { mutableStateOf(System.currentTimeMillis() + 3_600_000L) }
 
@@ -42,13 +43,18 @@ fun AlertsScreen(
 
     val conditions = listOf("Rain", "Snow", "Wind", "Clear", "Clouds", "Thunderstorm")
 
+    val conditionEmojis = mapOf(
+        "Rain" to "🌧️", "Snow" to "❄️", "Wind" to "💨",
+        "Clear" to "☀️", "Clouds" to "☁️", "Thunderstorm" to "⛈️"
+    )
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ---- CREATE ALARM SECTION ----
+        // ── Create Alarm Section ──
         item {
             Text(
                 text = "Create Weather Alarm",
@@ -61,13 +67,15 @@ fun AlertsScreen(
 
             Text(
                 text = "Weather Condition",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
         }
 
-        // Condition chips in a flow-like layout
+        // Condition chips
         item {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -77,12 +85,15 @@ fun AlertsScreen(
                     FilterChip(
                         selected = selectedCondition == condition,
                         onClick = { selectedCondition = condition },
-                        label = { Text(condition) }
+                        label = {
+                            Text("${conditionEmojis[condition] ?: ""} $condition")
+                        },
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -92,7 +103,10 @@ fun AlertsScreen(
                     FilterChip(
                         selected = selectedCondition == condition,
                         onClick = { selectedCondition = condition },
-                        label = { Text(condition) }
+                        label = {
+                            Text("${conditionEmojis[condition] ?: ""} $condition")
+                        },
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             }
@@ -100,15 +114,16 @@ fun AlertsScreen(
 
         // Time pickers
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Start Time
             Text(
                 text = "Start Time",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             OutlinedButton(
                 onClick = {
@@ -135,20 +150,22 @@ fun AlertsScreen(
                         cal.get(Calendar.DAY_OF_MONTH)
                     ).show()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(formatter.format(Date(startTime)))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // End Time
             Text(
                 text = "End Time",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             OutlinedButton(
                 onClick = {
@@ -175,7 +192,8 @@ fun AlertsScreen(
                         cal.get(Calendar.DAY_OF_MONTH)
                     ).show()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(formatter.format(Date(endTime)))
             }
@@ -184,33 +202,42 @@ fun AlertsScreen(
 
             // Create button
             Button(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(14.dp),
                 onClick = {
                     onSaveAlert(selectedCondition, startTime, endTime)
                 }
             ) {
-                Text("Create Alarm")
+                Text(
+                    "Create Alarm",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Quick test button
+            // Test button
             OutlinedButton(
                 onClick = {
                     val trigger = System.currentTimeMillis() + 5000
                     onSaveAlert(selectedCondition, trigger, trigger + 60000)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
             ) {
                 Text("Test Alarm (5s)")
             }
         }
 
-        // ---- SAVED ALARMS SECTION ----
+        // ── Saved Alarms Section ──
         item {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            HorizontalDivider()
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -226,11 +253,41 @@ fun AlertsScreen(
 
         if (alerts.isEmpty()) {
             item {
-                Text(
-                    text = "No alarms set",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.NotificationsNone,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "No Alarms Set",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "Create an alarm to get notified\nabout weather conditions",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
 
@@ -238,11 +295,11 @@ fun AlertsScreen(
             AlertItem(
                 alert = alert,
                 formatter = formatter,
+                conditionEmojis = conditionEmojis,
                 onDelete = { onDeleteAlert(alert) }
             )
         }
 
-        // Bottom padding
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -253,22 +310,15 @@ fun AlertsScreen(
 fun AlertItem(
     alert: WeatherAlert,
     formatter: SimpleDateFormat,
+    conditionEmojis: Map<String, String>,
     onDelete: () -> Unit
 ) {
-    val conditionEmoji = when (alert.condition.lowercase()) {
-        "rain" -> "🌧️"
-        "snow" -> "❄️"
-        "wind" -> "💨"
-        "clear" -> "☀️"
-        "clouds" -> "☁️"
-        "thunderstorm" -> "⛈️"
-        else -> "⚠️"
-    }
+    val emoji = conditionEmojis[alert.condition] ?: "⚠️"
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -279,13 +329,13 @@ fun AlertItem(
             // Condition info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "$conditionEmoji ${alert.condition}",
+                    text = "$emoji ${alert.condition}",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = "From: ${formatter.format(Date(alert.startTime))}",

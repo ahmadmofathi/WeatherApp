@@ -1,17 +1,15 @@
 package com.example.weatherapp.ui.weather.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 
 @Composable
 fun WeatherHero(
@@ -31,21 +29,47 @@ fun WeatherHero(
             weatherType = iconUrl
         )
 
+        // Giant temperature — thin weight, Apple Weather style
         Text(
             text = "$temperature°",
-            style = MaterialTheme.typography.displayLarge,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontSize = 112.sp,
+                fontWeight = FontWeight.Thin,
+                color = Color.White
+            )
         )
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Weather description
         Text(
-            text = description.uppercase(),
-            style = MaterialTheme.typography.titleMedium,
-            letterSpacing = 4.sp
+            text = description.replaceFirstChar { it.uppercase() },
+            style = MaterialTheme.typography.titleLarge.copy(
+                color = Color.White.copy(alpha = 0.9f),
+                letterSpacing = 2.sp
+            )
         )
 
-        Text(
-            text = "H:$high°   L:$low°",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // High / Low
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "H:$high°",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium
+                )
+            )
+            Text(
+                text = "L:$low°",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
     }
 }

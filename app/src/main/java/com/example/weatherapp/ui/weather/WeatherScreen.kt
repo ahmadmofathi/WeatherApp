@@ -1,5 +1,6 @@
 package com.example.weatherapp.ui.weather
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -11,6 +12,8 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.weatherapp.data.remote.dto.ForecastResponse
 import com.example.weatherapp.data.remote.dto.Hourly
 import com.example.weatherapp.data.remote.dto.Daily
+import com.example.weatherapp.ui.theme.WeatherColors
 import com.example.weatherapp.ui.weather.components.*
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.example.weatherapp.utils.getCurrentDate
@@ -36,7 +40,7 @@ fun WeatherScreen(
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
     onAddFavoriteClick: () -> Unit
-){
+) {
 
     val state by viewModel.uiState.collectAsState()
     val hourly by viewModel.hourlyForecast.collectAsState()
@@ -53,7 +57,6 @@ fun WeatherScreen(
     )
 
     LaunchedEffect(location) {
-
         location?.let { (lat, lon) ->
             viewModel.loadWeather(lat, lon)
         }
@@ -62,13 +65,7 @@ fun WeatherScreen(
     when (state) {
 
         is WeatherUiState.Loading -> {
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            ShimmerLoadingScreen()
         }
 
         is WeatherUiState.Error -> {
@@ -76,48 +73,10 @@ fun WeatherScreen(
             val message =
                 (state as WeatherUiState.Error).message
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(32.dp)
-                ) {
-                    Text(
-                        text = "📡",
-                        style = MaterialTheme.typography.displayLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "No Internet Connection",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = { viewModel.reloadWeather() }
-                    ) {
-                        Text("Retry")
-                    }
-                }
-            }
+            ErrorScreen(
+                message = message,
+                onRetry = { viewModel.reloadWeather() }
+            )
         }
 
         is WeatherUiState.Success -> {
@@ -158,6 +117,200 @@ fun WeatherScreen(
     }
 }
 
+// ── Shimmer Loading Skeleton ─────────────────────────────────────────
+
+@Composable
+fun ShimmerLoadingScreen() {
+    val shimmerColors = listOf(
+        Color.White.copy(alpha = 0.1f),
+        Color.White.copy(alpha = 0.25f),
+        Color.White.copy(alpha = 0.1f)
+    )
+
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val translateAnim = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmer_translate"
+    )
+
+    val brush = Brush.linearGradient(
+        colors = shimmerColors,
+        start = Offset(translateAnim.value - 200f, 0f),
+        end = Offset(translateAnim.value, 0f)
+    )
+
+    val background = Brush.verticalGradient(WeatherColors.Default)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(60.dp))
+
+            // City name shimmer
+            Box(
+                modifier = Modifier
+                    .width(180.dp)
+                    .height(28.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Date shimmer
+            Box(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // Weather icon shimmer
+            Box(
+                modifier = Modifier
+                    .size(160.dp)
+                    .clip(RoundedCornerShape(80.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Temperature shimmer
+            Box(
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(96.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Description shimmer
+            Box(
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(20.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // Stats card shimmer
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(brush)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Hourly row shimmer
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                repeat(4) {
+                    Box(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(110.dp)
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(brush)
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ── Error Screen ─────────────────────────────────────────────────────
+
+@Composable
+fun ErrorScreen(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF1A237E), Color(0xFF0D47A1))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Text(
+                text = "📡",
+                style = MaterialTheme.typography.displayMedium
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "No Internet Connection",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                ),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White.copy(alpha = 0.7f)
+                ),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF1A237E)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "Retry",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+}
+
+// ── Main Weather Content ─────────────────────────────────────────────
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WeatherContent(
@@ -171,29 +324,17 @@ private fun WeatherContent(
     onAddFavoriteClick: () -> Unit,
     isOffline: Boolean
 ) {
-    val weatherType =
-        weather.weather[0].main
-
+    val weatherType = weather.weather[0].main
     val date = getCurrentDate()
     val time = getCurrentTime()
 
     val background = when (weatherType) {
-
-        "Clear" -> Brush.verticalGradient(
-            listOf(Color(0xFF4FC3F7), Color(0xFFFFE082))
-        )
-
-        "Clouds" -> Brush.verticalGradient(
-            listOf(Color(0xFF90A4AE), Color(0xFFECEFF1))
-        )
-
-        "Rain" -> Brush.verticalGradient(
-            listOf(Color(0xFF455A64), Color(0xFF90CAF9))
-        )
-
-        else -> Brush.verticalGradient(
-            listOf(Color(0xFF4FC3F7), Color(0xFFE3F2FD))
-        )
+        "Clear" -> Brush.verticalGradient(WeatherColors.ClearDay)
+        "Clouds" -> Brush.verticalGradient(WeatherColors.Clouds)
+        "Rain", "Drizzle" -> Brush.verticalGradient(WeatherColors.Rain)
+        "Thunderstorm" -> Brush.verticalGradient(WeatherColors.Thunderstorm)
+        "Snow" -> Brush.verticalGradient(WeatherColors.Snow)
+        else -> Brush.verticalGradient(WeatherColors.Default)
     }
 
     Box(
@@ -203,13 +344,10 @@ private fun WeatherContent(
     ) {
 
         LazyColumn(
-
             modifier = Modifier
                 .fillMaxSize()
                 .background(background),
-
             contentPadding = PaddingValues(16.dp)
-
         ) {
 
             // Offline banner
@@ -219,15 +357,15 @@ private fun WeatherContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFFF3E0)
+                            containerColor = Color(0xFFFFF3E0).copy(alpha = 0.9f)
                         )
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp),
+                                .padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -235,7 +373,7 @@ private fun WeatherContent(
                                 style = MaterialTheme.typography.titleMedium
                             )
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
 
                             Text(
                                 text = "Offline Mode — Showing last known data",
@@ -250,7 +388,6 @@ private fun WeatherContent(
             }
 
             item {
-
                 WeatherHeader(
                     city = weather.name,
                     date = date,
@@ -260,7 +397,7 @@ private fun WeatherContent(
                     onAddFavoriteClick = onAddFavoriteClick
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 WeatherHero(
                     temperature = weather.main.temp.toInt(),
@@ -279,26 +416,28 @@ private fun WeatherContent(
                     clouds = weather.clouds.all
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
 
+            // Hourly forecast section
             item {
-
                 Text(
                     text = stringResource(R.string.next_24_hours),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
 
                     items(hourly) { hour ->
 
-                        val icon =
-                            hour.weather[0].icon
+                        val icon = hour.weather[0].icon
 
                         val iconUrl =
                             "https://openweathermap.org/img/wn/${icon}@2x.png"
@@ -312,14 +451,17 @@ private fun WeatherContent(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
 
+            // Daily forecast section
             item {
-
                 Text(
                     text = stringResource(R.string.five_day_forecast),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -327,8 +469,7 @@ private fun WeatherContent(
 
             items(daily, key = { it.dt }) { day ->
 
-                val icon =
-                    day.weather[0].icon
+                val icon = day.weather[0].icon
 
                 val iconUrl =
                     "https://openweathermap.org/img/wn/${icon}@2x.png"
@@ -349,27 +490,21 @@ private fun WeatherContent(
         PullRefreshIndicator(
             refreshing = refreshing,
             state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = Color.White,
+            contentColor = Color(0xFF1565C0)
         )
     }
 }
 
 fun formatHour(timestamp: Long): String {
-
     val date = Date(timestamp * 1000)
-
-    val formatter =
-        SimpleDateFormat("HH:mm", Locale.getDefault())
-
+    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     return formatter.format(date)
 }
 
 fun formatDay(timestamp: Long): String {
-
     val date = Date(timestamp * 1000)
-
-    val formatter =
-        SimpleDateFormat("EEEE", Locale.getDefault())
-
+    val formatter = SimpleDateFormat("EEEE", Locale.getDefault())
     return formatter.format(date)
 }

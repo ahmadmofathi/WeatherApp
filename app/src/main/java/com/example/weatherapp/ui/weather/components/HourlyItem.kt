@@ -1,23 +1,18 @@
 package com.example.weatherapp.ui.weather.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.weatherapp.data.remote.dto.Hourly
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.weatherapp.ui.theme.WeatherColors
+
 @Composable
 fun HourlyItem(
     time: String,
@@ -27,32 +22,56 @@ fun HourlyItem(
 ) {
 
     Card(
-        colors = if (isNow)
-            CardDefaults.cardColors(
-                containerColor = Color(0xFFFF8C00)
-            )
-        else
-            CardDefaults.cardColors(),
-        shape = RoundedCornerShape(32.dp),
-        modifier = Modifier
-            .width(80.dp)
-            .padding(6.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isNow)
+                Color.White.copy(alpha = 0.35f)
+            else
+                WeatherColors.GlassWhite
+        ),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(
+            1.dp,
+            if (isNow)
+                Color.White.copy(alpha = 0.5f)
+            else
+                WeatherColors.GlassBorder
+        ),
+        modifier = Modifier.width(80.dp)
     ) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 16.dp
+            )
         ) {
 
-            Text(time, maxLines = 1)
+            Text(
+                text = time,
+                maxLines = 1,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             AsyncImage(
                 model = iconUrl,
                 contentDescription = null,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(36.dp)
             )
 
-            Text("$temp°")
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "$temp°",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
         }
     }
 }
