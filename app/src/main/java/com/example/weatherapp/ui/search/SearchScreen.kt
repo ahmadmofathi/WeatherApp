@@ -14,8 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
 import com.example.weatherapp.viewmodel.SearchViewModel
 
 @Composable
@@ -32,6 +34,7 @@ fun SearchScreen(
     var query by remember { mutableStateOf("") }
 
     val results by viewModel.results.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
 
@@ -42,7 +45,7 @@ fun SearchScreen(
     ) {
 
         Text(
-            text = "Search City",
+            text = stringResource(R.string.search_city),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -61,7 +64,7 @@ fun SearchScreen(
 
             modifier = Modifier.fillMaxWidth(),
 
-            label = { Text("Enter city name") },
+            label = { Text(stringResource(R.string.enter_city_name)) },
 
             leadingIcon = {
                 Icon(
@@ -77,6 +80,31 @@ fun SearchScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Loading indicator
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        // No results message
+        if (query.length >= 2 && results.isEmpty() && !isLoading) {
+            Text(
+                text = stringResource(R.string.no_results_found),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -139,7 +167,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                "Select From Map",
+                stringResource(R.string.select_from_map),
                 style = MaterialTheme.typography.labelLarge
             )
         }

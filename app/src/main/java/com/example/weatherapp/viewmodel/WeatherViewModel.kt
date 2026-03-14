@@ -46,13 +46,29 @@ class WeatherViewModel(
     private var lastLon: Double = 0.0
 
     private var unit: String = "metric"
+    private var windUnit: String = "mps"
     private var language: String = "en"
+
+    // Expose units for UI components
+    private val _temperatureUnit = MutableStateFlow("metric")
+    val temperatureUnit: StateFlow<String> = _temperatureUnit
+
+    private val _windSpeedUnit = MutableStateFlow("mps")
+    val windSpeedUnit: StateFlow<String> = _windSpeedUnit
 
     init {
 
         viewModelScope.launch {
             settingsDataStore.temperatureUnit.collect {
                 unit = it
+                _temperatureUnit.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            settingsDataStore.windSpeedUnit.collect {
+                windUnit = it
+                _windSpeedUnit.value = it
             }
         }
 
@@ -74,11 +90,14 @@ class WeatherViewModel(
 
             try {
 
+                // Map "kelvin" to "standard" for OpenWeather API
+                val apiUnit = if (unit == "kelvin") "standard" else unit
+
                 val response =
                     repository.getWeather(
                         lat,
                         lon,
-                        unit,
+                        apiUnit,
                         language
                     )
 
@@ -91,7 +110,7 @@ class WeatherViewModel(
                         repository.getHourlyForecast(
                             lat,
                             lon,
-                            unit
+                            apiUnit
                         )
 
                     _hourlyForecast.value =
@@ -101,7 +120,7 @@ class WeatherViewModel(
                         repository.getDailyForecast(
                             lat,
                             lon,
-                            unit
+                            apiUnit
                         )
 
                     _dailyForecast.value =

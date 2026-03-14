@@ -13,7 +13,7 @@ import com.example.weatherapp.data.local.favorite.*
         WeatherAlert::class,
         CachedWeather::class
     ],
-    version = 3
+    version = 4
 )
 abstract class WeatherDatabase : RoomDatabase() {
 

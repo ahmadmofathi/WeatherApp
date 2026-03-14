@@ -12,6 +12,7 @@ class SettingsDataStore(private val context: Context) : SettingsProvider {
     companion object {
         val ALERTS = booleanPreferencesKey("alerts_enabled")
         val UNIT = stringPreferencesKey("temperature_unit")
+        val WIND_UNIT = stringPreferencesKey("wind_speed_unit")
         val LANGUAGE = stringPreferencesKey("language")
         val ALERT_CONDITION = stringPreferencesKey("alert_condition")
     }
@@ -24,6 +25,11 @@ class SettingsDataStore(private val context: Context) : SettingsProvider {
     override val temperatureUnit =
         context.dataStore.data.map { prefs ->
             prefs[UNIT] ?: "metric"
+        }
+
+    override val windSpeedUnit =
+        context.dataStore.data.map { prefs ->
+            prefs[WIND_UNIT] ?: "mps"
         }
 
     override val language =
@@ -45,6 +51,12 @@ class SettingsDataStore(private val context: Context) : SettingsProvider {
     suspend fun setTemperatureUnit(unit: String) {
         context.dataStore.edit { prefs ->
             prefs[UNIT] = unit
+        }
+    }
+
+    suspend fun setWindSpeedUnit(unit: String) {
+        context.dataStore.edit { prefs ->
+            prefs[WIND_UNIT] = unit
         }
     }
 

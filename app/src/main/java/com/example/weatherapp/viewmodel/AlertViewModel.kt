@@ -32,6 +32,14 @@ class AlertViewModel(
             repository.deleteAlert(alert)
         }
     }
+
+    fun toggleAlert(alert: WeatherAlert, isActive: Boolean, onToggle: (WeatherAlert) -> Unit) {
+        viewModelScope.launch {
+            val updated = alert.copy(isActive = isActive)
+            repository.updateAlert(updated)
+            onToggle(updated)
+        }
+    }
 }
 
 class AlertViewModelFactory(

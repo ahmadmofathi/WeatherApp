@@ -17,8 +17,15 @@ fun WeatherHero(
     description: String,
     high: Int,
     low: Int,
-    iconUrl: String
+    iconUrl: String,
+    temperatureUnit: String = "metric"
 ) {
+
+    val unitSuffix = when (temperatureUnit) {
+        "imperial" -> "°F"
+        "kelvin" -> " K"
+        else -> "°C"
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -31,7 +38,7 @@ fun WeatherHero(
 
         // Giant temperature — thin weight, Apple Weather style
         Text(
-            text = "$temperature°",
+            text = "$temperature$unitSuffix",
             style = MaterialTheme.typography.displayLarge.copy(
                 fontSize = 112.sp,
                 fontWeight = FontWeight.Thin,
@@ -57,14 +64,14 @@ fun WeatherHero(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "H:$high°",
+                text = "H:$high$unitSuffix",
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White.copy(alpha = 0.8f),
                     fontWeight = FontWeight.Medium
                 )
             )
             Text(
-                text = "L:$low°",
+                text = "L:$low$unitSuffix",
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Medium

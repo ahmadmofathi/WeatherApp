@@ -11,8 +11,6 @@ import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,8 +22,28 @@ fun WeatherStatsCard(
     humidity: Int,
     wind: Double,
     pressure: Int,
-    clouds: Int
+    clouds: Int,
+    windSpeedUnit: String = "mps",
+    temperatureUnit: String = "metric"
 ) {
+
+    // Determine wind display unit
+    val windValue: Double
+    val windUnitLabel: String
+
+    when (windSpeedUnit) {
+        "mph" -> {
+            // API returns m/s for metric/kelvin, mph for imperial
+            // If temperatureUnit is imperial, API already returns mph
+            windValue = if (temperatureUnit == "imperial") wind else wind * 2.237
+            windUnitLabel = stringResource(R.string.unit_mph)
+        }
+        else -> {
+            // mps
+            windValue = if (temperatureUnit == "imperial") wind / 2.237 else wind
+            windUnitLabel = stringResource(R.string.unit_mps)
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -54,7 +72,7 @@ fun WeatherStatsCard(
             WeatherStatItem(
                 icon = Icons.Outlined.Air,
                 title = stringResource(R.string.wind),
-                value = "${wind.toInt()} ${stringResource(R.string.kmh)}"
+                value = "${windValue.toInt()} $windUnitLabel"
             )
 
             WeatherStatItem(

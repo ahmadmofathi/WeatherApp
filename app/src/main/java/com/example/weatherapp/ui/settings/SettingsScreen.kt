@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Thermostat
@@ -24,11 +25,13 @@ fun SettingsScreen(
     alertsEnabled: Boolean,
     alertCondition: String,
     temperatureUnit: String,
+    windSpeedUnit: String,
     language: String,
 
     onAlertsChanged: (Boolean) -> Unit,
     onConditionChanged: (String) -> Unit,
     onUnitChanged: (String) -> Unit,
+    onWindUnitChanged: (String) -> Unit,
     onLanguageChanged: (String) -> Unit
 
 ) {
@@ -143,14 +146,50 @@ fun SettingsScreen(
                 FilterChip(
                     selected = temperatureUnit == "metric",
                     onClick = { onUnitChanged("metric") },
-                    label = { Text("°C") },
+                    label = { Text("°C (${stringResource(R.string.celsius)})") },
                     shape = RoundedCornerShape(12.dp)
                 )
 
                 FilterChip(
                     selected = temperatureUnit == "imperial",
                     onClick = { onUnitChanged("imperial") },
-                    label = { Text("°F") },
+                    label = { Text("°F (${stringResource(R.string.fahrenheit)})") },
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                FilterChip(
+                    selected = temperatureUnit == "kelvin",
+                    onClick = { onUnitChanged("kelvin") },
+                    label = { Text("K (${stringResource(R.string.kelvin)})") },
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ─── Wind Speed Unit Card ───────────────────────────────
+
+        SettingsSectionCard(
+            icon = Icons.Default.Air,
+            title = stringResource(R.string.wind_speed_unit)
+        ) {
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                FilterChip(
+                    selected = windSpeedUnit == "mps",
+                    onClick = { onWindUnitChanged("mps") },
+                    label = { Text(stringResource(R.string.meter_per_sec)) },
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                FilterChip(
+                    selected = windSpeedUnit == "mph",
+                    onClick = { onWindUnitChanged("mph") },
+                    label = { Text(stringResource(R.string.miles_per_hour)) },
                     shape = RoundedCornerShape(12.dp)
                 )
             }

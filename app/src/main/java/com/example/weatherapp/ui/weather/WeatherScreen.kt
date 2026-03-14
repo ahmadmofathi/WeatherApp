@@ -49,6 +49,8 @@ fun WeatherScreen(
 
     val refreshing by viewModel.isRefreshing.collectAsState()
     val location by viewModel.location.collectAsState()
+    val tempUnit by viewModel.temperatureUnit.collectAsState()
+    val windUnit by viewModel.windSpeedUnit.collectAsState()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
@@ -95,7 +97,9 @@ fun WeatherScreen(
                 onMenuClick = onMenuClick,
                 onSearchClick = onSearchClick,
                 onToggleFavoriteClick = onToggleFavoriteClick,
-                isOffline = false
+                isOffline = false,
+                temperatureUnit = tempUnit,
+                windSpeedUnit = windUnit
             )
         }
 
@@ -114,7 +118,9 @@ fun WeatherScreen(
                 onMenuClick = onMenuClick,
                 onSearchClick = onSearchClick,
                 onToggleFavoriteClick = onToggleFavoriteClick,
-                isOffline = true
+                isOffline = true,
+                temperatureUnit = tempUnit,
+                windSpeedUnit = windUnit
             )
         }
     }
@@ -319,7 +325,9 @@ private fun WeatherContent(
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
     onToggleFavoriteClick: () -> Unit,
-    isOffline: Boolean
+    isOffline: Boolean,
+    temperatureUnit: String = "metric",
+    windSpeedUnit: String = "mps"
 ) {
     val weatherType = weather.weather[0].main
     val date = getCurrentDate()
@@ -402,16 +410,19 @@ private fun WeatherContent(
                     description = weather.weather[0].description,
                     high = weather.main.temp_max.toInt(),
                     low = weather.main.temp_min.toInt(),
-                    iconUrl = weather.weather[0].main
+                    iconUrl = weather.weather[0].main,
+                    temperatureUnit = temperatureUnit
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 WeatherStatsCard(
                     humidity = weather.main.humidity,
-                    wind = weather.wind.speed * 3.6,
+                    wind = weather.wind.speed,
                     pressure = weather.main.pressure,
-                    clouds = weather.clouds.all
+                    clouds = weather.clouds.all,
+                    windSpeedUnit = windSpeedUnit,
+                    temperatureUnit = temperatureUnit
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))

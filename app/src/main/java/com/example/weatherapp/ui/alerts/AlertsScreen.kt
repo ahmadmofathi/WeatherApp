@@ -31,7 +31,8 @@ fun AlertsScreen(
         startTime: Long,
         endTime: Long
     ) -> Unit,
-    onDeleteAlert: (WeatherAlert) -> Unit
+    onDeleteAlert: (WeatherAlert) -> Unit,
+    onToggleAlert: (WeatherAlert, Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -302,7 +303,8 @@ fun AlertsScreen(
             AlertItem(
                 alert = alert,
                 formatter = formatter,
-                onDelete = { onDeleteAlert(alert) }
+                onDelete = { onDeleteAlert(alert) },
+                onToggle = { isActive -> onToggleAlert(alert, isActive) }
             )
         }
 
@@ -316,7 +318,8 @@ fun AlertsScreen(
 fun AlertItem(
     alert: WeatherAlert,
     formatter: SimpleDateFormat,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onToggle: (Boolean) -> Unit
 ) {
     val conditionEmojis = mapOf(
         "Rain" to "🌧️", "Snow" to "❄️", "Wind" to "💨",
@@ -327,7 +330,13 @@ fun AlertItem(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (alert.isActive)
+                MaterialTheme.colorScheme.surface
+            else
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
     ) {
         Row(
             modifier = Modifier
@@ -357,6 +366,14 @@ fun AlertItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            // Active / Inactive Switch
+            Switch(
+                checked = alert.isActive,
+                onCheckedChange = onToggle
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             IconButton(onClick = onDelete) {
                 Icon(

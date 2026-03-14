@@ -36,6 +36,13 @@ class SettingsViewModel(
             "metric"
         )
 
+    val windSpeedUnit =
+        dataStore.windSpeedUnit.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            "mps"
+        )
+
     val language =
         dataStore.language.stateIn(
             viewModelScope,
@@ -73,6 +80,13 @@ class SettingsViewModel(
 
         viewModelScope.launch {
             dataStore.setTemperatureUnit(unit)
+        }
+    }
+
+    fun setWindSpeedUnit(unit: String) {
+
+        viewModelScope.launch {
+            dataStore.setWindSpeedUnit(unit)
         }
     }
 

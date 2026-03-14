@@ -16,6 +16,10 @@ class AlertRepository(
         dao.deleteAlert(alert)
     }
 
+    suspend fun updateAlert(alert: WeatherAlert) {
+        dao.updateAlert(alert)
+    }
+
     fun getAlerts(): Flow<List<WeatherAlert>> {
         return dao.getAlerts()
     }

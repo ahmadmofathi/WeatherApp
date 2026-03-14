@@ -12,6 +12,9 @@ interface AlertDao {
     @Delete
     suspend fun deleteAlert(alert: WeatherAlert)
 
+    @Update
+    suspend fun updateAlert(alert: WeatherAlert)
+
     @Query("SELECT * FROM weather_alerts")
     fun getAlerts(): Flow<List<WeatherAlert>>
 

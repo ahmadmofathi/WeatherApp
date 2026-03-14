@@ -164,6 +164,26 @@ fun AppNavigation(
                         alertId = alert.id
                     )
                     alertViewModel.deleteAlert(alert)
+                },
+
+                onToggleAlert = { alert, isActive ->
+                    alertViewModel.toggleAlert(alert, isActive) { updated ->
+                        if (updated.isActive) {
+                            // Only reschedule if still within valid time
+                            if (System.currentTimeMillis() < updated.startTime) {
+                                scheduleAlarm(
+                                    context = context,
+                                    triggerTime = updated.startTime,
+                                    alertId = updated.id
+                                )
+                            }
+                        } else {
+                            cancelAlarm(
+                                context = context,
+                                alertId = updated.id
+                            )
+                        }
+                    }
                 }
             )
         }
@@ -183,6 +203,7 @@ fun AppNavigation(
             val alertsEnabled by settingsViewModel.alertsEnabled.collectAsState()
             val alertCondition by settingsViewModel.alertCondition.collectAsState()
             val unit by settingsViewModel.temperatureUnit.collectAsState()
+            val windUnit by settingsViewModel.windSpeedUnit.collectAsState()
             val language by settingsViewModel.language.collectAsState()
 
 
@@ -191,6 +212,7 @@ fun AppNavigation(
                 alertsEnabled = alertsEnabled,
                 alertCondition = alertCondition,
                 temperatureUnit = unit,
+                windSpeedUnit = windUnit,
                 language = language,
 
                 onAlertsChanged = { enabled ->
@@ -214,6 +236,10 @@ fun AppNavigation(
                 onUnitChanged = { unit ->
                     settingsViewModel.setTemperatureUnit(unit)
                     weatherViewModel.reloadWeather()
+                },
+
+                onWindUnitChanged = { windUnit ->
+                    settingsViewModel.setWindSpeedUnit(windUnit)
                 },
 
                 onLanguageChanged = { lang ->

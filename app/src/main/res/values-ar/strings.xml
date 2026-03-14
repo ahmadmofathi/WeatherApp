@@ -32,7 +32,7 @@
     <string name="alert_condition">نوع التنبيه</string>
     <string name="rain">مطر</string>
     <string name="snow">ثلج</string>
-    <string name="clear">صحو</string>
+    <string name="clear">صافي</string>
 
     <!-- شاشة التنبيهات -->
     <string name="create_weather_alarm">إنشاء تنبيه طقس</string>
@@ -55,4 +55,24 @@
 
     <!-- الإعدادات -->
     <string name="notifications">الإشعارات</string>
+    <string name="wind_speed_unit">وحدة سرعة الرياح</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">سلسيوس</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="meter_per_sec">متر/ثانية</string>
+    <string name="miles_per_hour">ميل/ساعة</string>
+    <string name="unit_mps">م/ث</string>
+    <string name="unit_mph">ميل/س</string>
+    <string name="unit_k">ك</string>
+
+    <!-- شاشة البحث -->
+    <string name="search_city">بحث عن مدينة</string>
+    <string name="enter_city_name">أدخل اسم المدينة</string>
+    <string name="no_results_found">لا توجد نتائج</string>
+    <string name="select_from_map">اختيار من الخريطة</string>
+    <string name="loading">جاري التحميل…</string>
+
+    <!-- تبديل التنبيه -->
+    <string name="alarm_active">مُفعّل</string>
+    <string name="alarm_inactive">غير مُفعّل</string>
 </resources>
