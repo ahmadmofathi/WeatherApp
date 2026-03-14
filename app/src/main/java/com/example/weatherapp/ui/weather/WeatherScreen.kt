@@ -37,9 +37,10 @@ import java.util.*
 @Composable
 fun WeatherScreen(
     viewModel: WeatherViewModel,
+    isFavorite: Boolean,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onAddFavoriteClick: () -> Unit
+    onToggleFavoriteClick: () -> Unit
 ) {
 
     val state by viewModel.uiState.collectAsState()
@@ -90,9 +91,10 @@ fun WeatherScreen(
                 daily = daily,
                 refreshing = refreshing,
                 pullRefreshState = pullRefreshState,
+                isFavorite = isFavorite,
                 onMenuClick = onMenuClick,
                 onSearchClick = onSearchClick,
-                onAddFavoriteClick = onAddFavoriteClick,
+                onToggleFavoriteClick = onToggleFavoriteClick,
                 isOffline = false
             )
         }
@@ -108,9 +110,10 @@ fun WeatherScreen(
                 daily = daily,
                 refreshing = refreshing,
                 pullRefreshState = pullRefreshState,
+                isFavorite = isFavorite,
                 onMenuClick = onMenuClick,
                 onSearchClick = onSearchClick,
-                onAddFavoriteClick = onAddFavoriteClick,
+                onToggleFavoriteClick = onToggleFavoriteClick,
                 isOffline = true
             )
         }
@@ -159,7 +162,6 @@ fun ShimmerLoadingScreen() {
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // City name shimmer
             Box(
                 modifier = Modifier
                     .width(180.dp)
@@ -170,7 +172,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Date shimmer
             Box(
                 modifier = Modifier
                     .width(140.dp)
@@ -181,7 +182,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Weather icon shimmer
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -191,7 +191,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Temperature shimmer
             Box(
                 modifier = Modifier
                     .width(160.dp)
@@ -202,7 +201,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Description shimmer
             Box(
                 modifier = Modifier
                     .width(120.dp)
@@ -213,7 +211,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Stats card shimmer
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -224,7 +221,6 @@ fun ShimmerLoadingScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Hourly row shimmer
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -319,9 +315,10 @@ private fun WeatherContent(
     daily: List<Daily>,
     refreshing: Boolean,
     pullRefreshState: androidx.compose.material.pullrefresh.PullRefreshState,
+    isFavorite: Boolean,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onAddFavoriteClick: () -> Unit,
+    onToggleFavoriteClick: () -> Unit,
     isOffline: Boolean
 ) {
     val weatherType = weather.weather[0].main
@@ -392,9 +389,10 @@ private fun WeatherContent(
                     city = weather.name,
                     date = date,
                     time = time,
+                    isFavorite = isFavorite,
                     onMenuClick = onMenuClick,
                     onSearchClick = onSearchClick,
-                    onAddFavoriteClick = onAddFavoriteClick
+                    onToggleFavoriteClick = onToggleFavoriteClick
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

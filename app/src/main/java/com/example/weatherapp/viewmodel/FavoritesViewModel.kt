@@ -21,6 +21,13 @@ class FavoritesViewModel(
     )
     val uiState: StateFlow<FavoritesUiState> = _uiState
 
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
+
+    // Tracks which action just happened for snackbar
+    private val _favoriteEvent = MutableStateFlow<FavoriteEvent?>(null)
+    val favoriteEvent: StateFlow<FavoriteEvent?> = _favoriteEvent
+
     init {
         observeFavorites()
     }
@@ -41,6 +48,43 @@ class FavoritesViewModel(
                         }
                 }
         }
+    }
+
+    fun checkIfFavorite(lat: Double, lon: Double) {
+        val state = _uiState.value
+        if (state is FavoritesUiState.Success) {
+            _isFavorite.value = state.favorites.any { fav ->
+                Math.abs(fav.latitude - lat) < 0.01 && Math.abs(fav.longitude - lon) < 0.01
+            }
+        } else {
+            _isFavorite.value = false
+        }
+    }
+
+    fun toggleFavorite(lat: Double, lon: Double) {
+        val state = _uiState.value
+        if (state is FavoritesUiState.Success) {
+            val existing = state.favorites.find { fav ->
+                Math.abs(fav.latitude - lat) < 0.01 && Math.abs(fav.longitude - lon) < 0.01
+            }
+            if (existing != null) {
+                removeFavorite(existing)
+                _isFavorite.value = false
+                _favoriteEvent.value = FavoriteEvent.REMOVED
+            } else {
+                addFavoriteFromCoordinates(lat, lon)
+                _isFavorite.value = true
+                _favoriteEvent.value = FavoriteEvent.ADDED
+            }
+        } else {
+            addFavoriteFromCoordinates(lat, lon)
+            _isFavorite.value = true
+            _favoriteEvent.value = FavoriteEvent.ADDED
+        }
+    }
+
+    fun clearFavoriteEvent() {
+        _favoriteEvent.value = null
     }
 
     fun addFavorite(location: FavoriteLocation) {
@@ -86,6 +130,9 @@ class FavoritesViewModel(
     }
 }
 
+enum class FavoriteEvent {
+    ADDED, REMOVED
+}
 
 class FavoritesViewModelFactory(
     private val repository: WeatherRepository

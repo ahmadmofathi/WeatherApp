@@ -1,5 +1,7 @@
 package com.example.weatherapp.ui.map
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -10,7 +12,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -27,15 +32,17 @@ fun MapScreen(
         mutableStateOf<GeoPoint?>(null)
     }
 
+    val context = LocalContext.current
+
     Column {
 
         AndroidView(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            factory = { context ->
+            factory = { ctx ->
 
-                val map = MapView(context).apply {
+                val map = MapView(ctx).apply {
 
                     setTileSource(TileSourceFactory.MAPNIK)
 
@@ -43,11 +50,12 @@ fun MapScreen(
 
                     setUseDataConnection(true)
 
-                    val startPoint = GeoPoint(30.0444, 31.2357)
+                    // Default position (Cairo) — will be overridden if GPS is available
+                    val defaultPoint = GeoPoint(30.0444, 31.2357)
 
                     controller.setZoom(10.0)
 
-                    controller.setCenter(startPoint)
+                    controller.setCenter(defaultPoint)
                 }
 
                 val marker = Marker(map).apply {
@@ -82,6 +90,27 @@ fun MapScreen(
                         }
                     )
                 )
+
+                // Center on user's current location if permission is granted
+                val hasPermission = ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (hasPermission) {
+                    try {
+                        val fusedClient = LocationServices.getFusedLocationProviderClient(ctx)
+                        fusedClient.lastLocation.addOnSuccessListener { location ->
+                            location?.let {
+                                val userPoint = GeoPoint(it.latitude, it.longitude)
+                                map.controller.animateTo(userPoint)
+                                map.controller.setZoom(14.0)
+                            }
+                        }
+                    } catch (_: Exception) {
+                        // Silently fall back to default position
+                    }
+                }
 
                 map
             }

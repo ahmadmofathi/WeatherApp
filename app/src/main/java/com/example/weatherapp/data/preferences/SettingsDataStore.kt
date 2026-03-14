@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore("settings")
 
-class SettingsDataStore(private val context: Context) {
+class SettingsDataStore(private val context: Context) : SettingsProvider {
 
     companion object {
         val ALERTS = booleanPreferencesKey("alerts_enabled")
@@ -16,22 +16,22 @@ class SettingsDataStore(private val context: Context) {
         val ALERT_CONDITION = stringPreferencesKey("alert_condition")
     }
 
-    val alertsEnabled =
+    override val alertsEnabled =
         context.dataStore.data.map { prefs ->
             prefs[ALERTS] ?: false
         }
 
-    val temperatureUnit =
+    override val temperatureUnit =
         context.dataStore.data.map { prefs ->
             prefs[UNIT] ?: "metric"
         }
 
-    val language =
+    override val language =
         context.dataStore.data.map { prefs ->
             prefs[LANGUAGE] ?: "en"
         }
 
-    val alertCondition =
+    override val alertCondition =
         context.dataStore.data.map { prefs ->
             prefs[ALERT_CONDITION] ?: "Rain"
         }

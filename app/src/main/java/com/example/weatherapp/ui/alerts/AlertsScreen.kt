@@ -13,11 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
 import com.example.weatherapp.data.local.alert.WeatherAlert
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,11 +42,16 @@ fun AlertsScreen(
 
     val formatter = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
 
-    val conditions = listOf("Rain", "Snow", "Wind", "Clear", "Clouds", "Thunderstorm")
+    // Conditions with their string resource IDs
+    data class ConditionItem(val key: String, val labelResId: Int, val emoji: String)
 
-    val conditionEmojis = mapOf(
-        "Rain" to "🌧️", "Snow" to "❄️", "Wind" to "💨",
-        "Clear" to "☀️", "Clouds" to "☁️", "Thunderstorm" to "⛈️"
+    val conditions = listOf(
+        ConditionItem("Rain", R.string.rain, "🌧️"),
+        ConditionItem("Snow", R.string.snow, "❄️"),
+        ConditionItem("Wind", R.string.wind, "💨"),
+        ConditionItem("Clear", R.string.clear, "☀️"),
+        ConditionItem("Clouds", R.string.clouds, "☁️"),
+        ConditionItem("Thunderstorm", R.string.thunderstorm, "⛈️")
     )
 
     LazyColumn(
@@ -57,7 +63,7 @@ fun AlertsScreen(
         // ── Create Alarm Section ──
         item {
             Text(
-                text = "Create Weather Alarm",
+                text = stringResource(R.string.create_weather_alarm),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -66,7 +72,7 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Weather Condition",
+                text = stringResource(R.string.weather_condition),
                 style = MaterialTheme.typography.titleSmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -75,7 +81,7 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        // Condition chips
+        // Condition chips — row 1
         item {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -83,10 +89,10 @@ fun AlertsScreen(
             ) {
                 conditions.take(3).forEach { condition ->
                     FilterChip(
-                        selected = selectedCondition == condition,
-                        onClick = { selectedCondition = condition },
+                        selected = selectedCondition == condition.key,
+                        onClick = { selectedCondition = condition.key },
                         label = {
-                            Text("${conditionEmojis[condition] ?: ""} $condition")
+                            Text("${condition.emoji} ${stringResource(condition.labelResId)}")
                         },
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -95,16 +101,17 @@ fun AlertsScreen(
 
             Spacer(modifier = Modifier.height(6.dp))
 
+            // Condition chips — row 2
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 conditions.drop(3).forEach { condition ->
                     FilterChip(
-                        selected = selectedCondition == condition,
-                        onClick = { selectedCondition = condition },
+                        selected = selectedCondition == condition.key,
+                        onClick = { selectedCondition = condition.key },
                         label = {
-                            Text("${conditionEmojis[condition] ?: ""} $condition")
+                            Text("${condition.emoji} ${stringResource(condition.labelResId)}")
                         },
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -117,7 +124,7 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Start Time",
+                text = stringResource(R.string.start_time),
                 style = MaterialTheme.typography.titleSmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -159,7 +166,7 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "End Time",
+                text = stringResource(R.string.end_time),
                 style = MaterialTheme.typography.titleSmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -211,7 +218,7 @@ fun AlertsScreen(
                 }
             ) {
                 Text(
-                    "Create Alarm",
+                    stringResource(R.string.create_alarm),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -227,7 +234,7 @@ fun AlertsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp)
             ) {
-                Text("Test Alarm (5s)")
+                Text(stringResource(R.string.test_alarm))
             }
         }
 
@@ -242,7 +249,7 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Saved Alarms",
+                text = stringResource(R.string.saved_alarms),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -272,7 +279,7 @@ fun AlertsScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = "No Alarms Set",
+                            text = stringResource(R.string.no_alarms_set),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -281,7 +288,7 @@ fun AlertsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "Create an alarm to get notified\nabout weather conditions",
+                            text = stringResource(R.string.no_alarms_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -295,7 +302,6 @@ fun AlertsScreen(
             AlertItem(
                 alert = alert,
                 formatter = formatter,
-                conditionEmojis = conditionEmojis,
                 onDelete = { onDeleteAlert(alert) }
             )
         }
@@ -310,9 +316,12 @@ fun AlertsScreen(
 fun AlertItem(
     alert: WeatherAlert,
     formatter: SimpleDateFormat,
-    conditionEmojis: Map<String, String>,
     onDelete: () -> Unit
 ) {
+    val conditionEmojis = mapOf(
+        "Rain" to "🌧️", "Snow" to "❄️", "Wind" to "💨",
+        "Clear" to "☀️", "Clouds" to "☁️", "Thunderstorm" to "⛈️"
+    )
     val emoji = conditionEmojis[alert.condition] ?: "⚠️"
 
     Card(
@@ -326,7 +335,6 @@ fun AlertItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Condition info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "$emoji ${alert.condition}",
@@ -338,23 +346,22 @@ fun AlertItem(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "From: ${formatter.format(Date(alert.startTime))}",
+                    text = "${stringResource(R.string.start_time)}: ${formatter.format(Date(alert.startTime))}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
-                    text = "To: ${formatter.format(Date(alert.endTime))}",
+                    text = "${stringResource(R.string.end_time)}: ${formatter.format(Date(alert.endTime))}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            // Delete button
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete alarm",
+                    contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

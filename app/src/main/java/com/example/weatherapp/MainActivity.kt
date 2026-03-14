@@ -14,6 +14,8 @@ import androidx.room.Room
 import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.preferences.SettingsDataStore
 import com.example.weatherapp.data.remote.RetrofitInstance
+import com.example.weatherapp.data.local.WeatherLocalDataSourceImpl
+import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repository.AlertRepository
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
 import com.example.weatherapp.navigation.AppNavigation
@@ -76,11 +78,21 @@ fun WeatherApp(context: Context) {
 
     val api = remember { RetrofitInstance.api }
 
+    val remoteDataSource = remember {
+        WeatherRemoteDataSourceImpl(api)
+    }
+
+    val localDataSource = remember {
+        WeatherLocalDataSourceImpl(
+            database.favoriteDao(),
+            database.cachedWeatherDao()
+        )
+    }
+
     val repository = remember {
         WeatherRepositoryImpl(
-            database.favoriteDao(),
-            api,
-            database.cachedWeatherDao()
+            localDataSource,
+            remoteDataSource
         )
     }
     val alertRepository = remember {

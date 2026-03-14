@@ -2,6 +2,7 @@ package com.example.weatherapp.ui.weather.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.rounded.Menu
@@ -20,9 +21,10 @@ fun WeatherHeader(
     city: String,
     date: String,
     time: String,
+    isFavorite: Boolean,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onAddFavoriteClick: () -> Unit
+    onToggleFavoriteClick: () -> Unit
 ) {
 
     Column(
@@ -48,11 +50,17 @@ fun WeatherHeader(
             }
 
             Row {
-                IconButton(onClick = onAddFavoriteClick) {
+                IconButton(onClick = onToggleFavoriteClick) {
                     Icon(
-                        Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to favorites",
-                        tint = Color.White
+                        imageVector = if (isFavorite)
+                            Icons.Default.Favorite
+                        else
+                            Icons.Default.FavoriteBorder,
+                        contentDescription = "Toggle favorite",
+                        tint = if (isFavorite)
+                            Color(0xFFFF6B6B)
+                        else
+                            Color.White
                     )
                 }
 

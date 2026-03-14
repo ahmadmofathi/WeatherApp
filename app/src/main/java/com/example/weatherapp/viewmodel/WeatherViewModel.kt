@@ -3,20 +3,20 @@ package com.example.weatherapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.data.preferences.SettingsDataStore
+import com.example.weatherapp.data.preferences.SettingsProvider
 import com.example.weatherapp.data.remote.dto.Daily
 import com.example.weatherapp.data.remote.dto.Hourly
 import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.ui.weather.WeatherUiState
-import com.example.weatherapp.utils.NetworkMonitor
+import com.example.weatherapp.utils.ConnectivityObserver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(
     private val repository: WeatherRepository,
-    private val settingsDataStore: SettingsDataStore,
-    private val networkMonitor: NetworkMonitor
+    private val settingsDataStore: SettingsProvider,
+    private val networkMonitor: ConnectivityObserver
 ) : ViewModel() {
 
     private val _uiState =
@@ -180,8 +180,8 @@ class WeatherViewModel(
 
 class WeatherViewModelFactory(
     private val repository: WeatherRepository,
-    private val settingsDataStore: SettingsDataStore,
-    private val networkMonitor: NetworkMonitor
+    private val settingsDataStore: SettingsProvider,
+    private val networkMonitor: ConnectivityObserver
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
