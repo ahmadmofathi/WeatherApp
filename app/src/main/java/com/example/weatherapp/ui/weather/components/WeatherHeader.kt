@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -30,7 +31,9 @@ fun WeatherHeader(
     city: String,
     date: String,
     time: String,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onAddFavoriteClick: () -> Unit
 ) {
 
     Column(
@@ -49,9 +52,14 @@ fun WeatherHeader(
                 Icon(Icons.Default.Menu, contentDescription = null)
             }
 
-            IconButton(onClick = { }) {
+            IconButton(onClick = onAddFavoriteClick) {
+                Icon(Icons.Default.FavoriteBorder, null)
+            }
+
+            IconButton(onClick = onSearchClick) {
                 Icon(Icons.Default.Search, contentDescription = null)
             }
+
         }
 
         Text(
@@ -67,7 +75,7 @@ fun WeatherHeader(
                 text = date,
                 style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = time,
                 style = MaterialTheme.typography.bodyMedium

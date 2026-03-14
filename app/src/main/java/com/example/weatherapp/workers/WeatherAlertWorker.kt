@@ -9,7 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.weatherapp.R
+import com.example.weatherapp.data.preferences.SettingsDataStore
 import com.example.weatherapp.data.remote.RetrofitInstance
+import kotlinx.coroutines.flow.first
 
 class WeatherAlertWorker(
     context: Context,
@@ -23,6 +25,15 @@ class WeatherAlertWorker(
             val lat = inputData.getDouble("lat", 0.0)
             val lon = inputData.getDouble("lon", 0.0)
 
+            val dataStore = SettingsDataStore(applicationContext)
+
+            val alertsEnabled = dataStore.alertsEnabled.first()
+            val selectedCondition = dataStore.alertCondition.first()
+
+            if (!alertsEnabled) {
+                return Result.success()
+            }
+
             val response =
                 RetrofitInstance.api.getHourlyForecast(
                     lat = lat,
@@ -35,13 +46,11 @@ class WeatherAlertWorker(
 
             val condition =
                 nextHour?.weather?.firstOrNull()?.main ?: ""
-            //Test
-            sendNotification("Test Notification please take care")
 
-            if (condition == "Rain") {
+            if (condition == selectedCondition) {
 
                 sendNotification(
-                    "Rain expected in the next hour"
+                    "$condition expected in the next hour"
                 )
             }
 

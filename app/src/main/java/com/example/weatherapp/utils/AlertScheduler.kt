@@ -16,18 +16,30 @@ fun scheduleWeatherAlerts(
         "lon" to lon
     )
 
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
     val request =
         PeriodicWorkRequestBuilder<WeatherAlertWorker>(
-            30, TimeUnit.MINUTES
+            1, TimeUnit.HOURS
         )
             .setInputData(data)
+            .setConstraints(constraints)
             .build()
 
     WorkManager
         .getInstance(context)
         .enqueueUniquePeriodicWork(
             "weather_alerts",
-            ExistingPeriodicWorkPolicy.UPDATE,
+            ExistingPeriodicWorkPolicy.KEEP,
             request
         )
+}
+
+fun cancelWeatherAlerts(context: Context) {
+
+    WorkManager
+        .getInstance(context)
+        .cancelUniqueWork("weather_alerts")
 }

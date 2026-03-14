@@ -14,4 +14,8 @@ sealed class WeatherUiState {
         val message: String
     ) : WeatherUiState()
 
+    data class Offline(
+        val weather: ForecastResponse
+    ) : WeatherUiState()
+
 }

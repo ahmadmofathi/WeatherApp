@@ -13,6 +13,7 @@ class SettingsDataStore(private val context: Context) {
         val ALERTS = booleanPreferencesKey("alerts_enabled")
         val UNIT = stringPreferencesKey("temperature_unit")
         val LANGUAGE = stringPreferencesKey("language")
+        val ALERT_CONDITION = stringPreferencesKey("alert_condition")
     }
 
     val alertsEnabled =
@@ -30,6 +31,11 @@ class SettingsDataStore(private val context: Context) {
             prefs[LANGUAGE] ?: "en"
         }
 
+    val alertCondition =
+        context.dataStore.data.map { prefs ->
+            prefs[ALERT_CONDITION] ?: "Rain"
+        }
+
     suspend fun setAlertsEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[ALERTS] = enabled
@@ -45,6 +51,12 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setLanguage(lang: String) {
         context.dataStore.edit { prefs ->
             prefs[LANGUAGE] = lang
+        }
+    }
+
+    suspend fun setAlertCondition(condition: String) {
+        context.dataStore.edit { prefs ->
+            prefs[ALERT_CONDITION] = condition
         }
     }
 }

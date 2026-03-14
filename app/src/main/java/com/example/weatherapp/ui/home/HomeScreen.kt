@@ -44,7 +44,7 @@ fun HomeScreen(
             if (granted) {
 
                 locationHelper.getCurrentLocation { lat, lon ->
-                    weatherViewModel.loadWeather(lat, lon)
+                    weatherViewModel.initializeLocation(lat, lon)
                 }
             }
         }
@@ -78,17 +78,27 @@ fun HomeScreen(
 
                     onFavoriteClick = { lat, lon ->
 
+                        weatherViewModel.setLocation(lat, lon)
+
                         weatherViewModel.loadWeather(lat, lon)
 
-                        scope.launch {
-                            drawerState.close()
+                        scope.launch { drawerState.close() }
+                    },
+
+                    onMyLocationClick = {
+
+                        locationHelper.getCurrentLocation { lat, lon ->
+
+                            weatherViewModel.setLocation(lat, lon)
+
+                            weatherViewModel.loadWeather(lat, lon)
                         }
+
+                        scope.launch { drawerState.close() }
                     },
 
                     onSettingsClick = {
-                        scope.launch {
-                            drawerState.close()
-                        }
+                        scope.launch { drawerState.close() }
                         navController.navigate("settings")
                     },
 
@@ -103,16 +113,24 @@ fun HomeScreen(
 
         WeatherScreen(
 
-            lat = 0.0,
-            lon = 0.0,
-
             viewModel = weatherViewModel,
 
             onMenuClick = {
+                scope.launch { drawerState.open() }
+            },
 
-                scope.launch {
-                    drawerState.open()
-                }
+            onSearchClick = {
+                navController.navigate("search")
+            },
+
+            onAddFavoriteClick = {
+
+                val location = weatherViewModel.getLastLocation()
+
+                favoritesViewModel.addFavoriteFromCoordinates(
+                    location.first,
+                    location.second
+                )
             }
         )
     }

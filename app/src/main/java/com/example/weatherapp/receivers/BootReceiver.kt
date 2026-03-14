@@ -9,8 +9,7 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.d("BootReceiver", "Re-scheduling alarms after reboot")
-            // Here you would typically read the saved alarm times from DataStore/DB
-            // and call scheduleAlarm() for each one.
+            // Here you would call your scheduling logic to restore saved alarms
         }
     }
 }

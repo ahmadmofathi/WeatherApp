@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.weatherapp.R
 
 @Composable
 fun WeatherStatsCard(
@@ -38,22 +40,22 @@ fun WeatherStatsCard(
         ) {
 
             WeatherStatItem(
-                title = "HUMIDITY",
+                title = stringResource(R.string.humidity),
                 value = "$humidity%"
             )
 
             WeatherStatItem(
-                title = "WIND",
-                value = "${wind.toInt()} km/h"
+                title = stringResource(R.string.wind),
+                value = "${wind.toInt()} ${stringResource(R.string.kmh)}"
             )
 
             WeatherStatItem(
-                title = "PRESSURE",
-                value = "$pressure hPa"
+                title = stringResource(R.string.pressure),
+                value = "$pressure ${stringResource(R.string.hpa)}"
             )
 
             WeatherStatItem(
-                title = "CLOUDS",
+                title = stringResource(R.string.clouds),
                 value = "$clouds%"
             )
         }

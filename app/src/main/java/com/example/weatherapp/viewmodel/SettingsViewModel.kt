@@ -1,12 +1,13 @@
 package com.example.weatherapp.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.preferences.SettingsDataStore
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.weatherapp.utils.cancelWeatherAlerts
+import com.example.weatherapp.utils.scheduleWeatherAlerts
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -17,28 +18,54 @@ class SettingsViewModel(
     val alertsEnabled =
         dataStore.alertsEnabled.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(),
+            SharingStarted.Eagerly,
             false
+        )
+
+    val alertCondition =
+        dataStore.alertCondition.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            "Rain"
         )
 
     val temperatureUnit =
         dataStore.temperatureUnit.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(),
+            SharingStarted.Eagerly,
             "metric"
         )
 
     val language =
         dataStore.language.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(),
+            SharingStarted.Eagerly,
             "en"
         )
 
-    fun setAlertsEnabled(enabled: Boolean) {
+    fun toggleAlerts(
+        context: Context,
+        enabled: Boolean,
+        lat: Double,
+        lon: Double
+    ) {
 
         viewModelScope.launch {
+
             dataStore.setAlertsEnabled(enabled)
+
+            if (enabled) {
+                scheduleWeatherAlerts(context, lat, lon)
+            } else {
+                cancelWeatherAlerts(context)
+            }
+        }
+    }
+
+    fun setAlertCondition(condition: String) {
+
+        viewModelScope.launch {
+            dataStore.setAlertCondition(condition)
         }
     }
 

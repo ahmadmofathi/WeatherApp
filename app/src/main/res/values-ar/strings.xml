@@ -1,3 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="settings">الإعدادات</string>
+    <string name="weather_alerts">تنبيهات الطقس</string>
+    <string name="temperature_unit">وحدة الحرارة</string>
+    <string name="language">اللغة</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="next_24_hours">الـ 24 ساعة القادمة</string>
+    <string name="five_day_forecast">توقعات 5 أيام</string>
+    <string name="menu_home">الرئيسية</string>
+    <string name="menu_favorites">المفضلة</string>
+    <string name="menu_map">الخريطة</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_alerts">تنبيهات الطقس</string>
+    <string name="menu_search">بحث</string>
+    <string name="app_name">تطبيق الطقس</string>
+    <string name="my_location">موقعي</string>
+    <string name="favorites">المفضلة</string>
+    <string name="alerts">التنبيهات</string>
+    <string name="remove_city">إزالة المدينة</string>
+    <string name="remove_city_confirmation">هل تريد إزالة هذه المدينة من المفضلة؟</string>
+    <string name="delete">حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="pressure">الضغط</string>
+    <string name="clouds">الغيوم</string>
+    <string name="kmh">كم/س</string>
+    <string name="hpa">هكتوباسكال</string>
+    <string name="alert_condition">نوع التنبيه</string>
+    <string name="rain">مطر</string>
+    <string name="snow">ثلج</string>
+    <string name="clear">صحو</string>
 </resources>

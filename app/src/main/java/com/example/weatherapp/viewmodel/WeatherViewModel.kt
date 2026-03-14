@@ -8,13 +8,15 @@ import com.example.weatherapp.data.remote.dto.Daily
 import com.example.weatherapp.data.remote.dto.Hourly
 import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.ui.weather.WeatherUiState
+import com.example.weatherapp.utils.NetworkMonitor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(
     private val repository: WeatherRepository,
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    private val networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
     private val _uiState =
@@ -31,6 +33,14 @@ class WeatherViewModel(
     private val _dailyForecast =
         MutableStateFlow<List<Daily>>(emptyList())
     val dailyForecast: StateFlow<List<Daily>> = _dailyForecast
+
+    private val _location =
+        MutableStateFlow<Pair<Double, Double>?>(null)
+
+    val location: StateFlow<Pair<Double, Double>?> = _location
+    private var locationInitialized = false
+
+    val isConnected: StateFlow<Boolean> = networkMonitor.isConnected
 
     private var lastLat: Double = 0.0
     private var lastLon: Double = 0.0
@@ -75,50 +85,103 @@ class WeatherViewModel(
                 _uiState.value =
                     WeatherUiState.Success(response)
 
-                val hourly =
-                    repository.getHourlyForecast(
-                        lat,
-                        lon,
-                        unit
-                    )
+                // Try to load forecasts (non-critical)
+                try {
+                    val hourly =
+                        repository.getHourlyForecast(
+                            lat,
+                            lon,
+                            unit
+                        )
 
-                _hourlyForecast.value =
-                    hourly.hourly.take(12)
+                    _hourlyForecast.value =
+                        hourly.hourly.take(12)
 
-                val daily =
-                    repository.getDailyForecast(
-                        lat,
-                        lon,
-                        unit
-                    )
+                    val daily =
+                        repository.getDailyForecast(
+                            lat,
+                            lon,
+                            unit
+                        )
 
-                _dailyForecast.value =
-                    daily.daily.take(5)
+                    _dailyForecast.value =
+                        daily.daily.take(5)
+                } catch (_: Exception) {
+                    // Forecasts are non-critical; main weather is already showing
+                }
 
             } catch (e: Exception) {
 
-                _uiState.value =
-                    WeatherUiState.Error(
-                        e.message ?: "Network error"
-                    )
+                // API failed — try to load cached weather
+                val cached = repository.getCachedWeather()
+
+                if (cached != null) {
+                    _uiState.value = WeatherUiState.Offline(cached)
+                } else {
+                    _uiState.value =
+                        WeatherUiState.Error(
+                            e.message ?: "No internet connection"
+                        )
+                }
             }
 
             _isRefreshing.value = false
         }
+
+    }
+
+    fun setLocation(lat: Double, lon: Double) {
+        lastLat = lat
+        lastLon = lon
+        _location.value = Pair(lat, lon)
+        loadWeather(lat, lon)
     }
 
     fun getLastLocation(): Pair<Double, Double> {
         return Pair(lastLat, lastLon)
     }
+
     fun reloadWeather() {
         loadWeather(lastLat, lastLon)
+    }
+
+    fun loadWeatherByCity(city: String) {
+
+        viewModelScope.launch {
+
+            try {
+                val response = repository.getWeatherByCity(city)
+
+                loadWeather(
+                    response.coord.lat,
+                    response.coord.lon
+                )
+            } catch (e: Exception) {
+                val cached = repository.getCachedWeather()
+                if (cached != null) {
+                    _uiState.value = WeatherUiState.Offline(cached)
+                } else {
+                    _uiState.value = WeatherUiState.Error(
+                        e.message ?: "No internet connection"
+                    )
+                }
+            }
+        }
+    }
+
+    fun initializeLocation(lat: Double, lon: Double) {
+        if (!locationInitialized) {
+            setLocation(lat, lon)
+            locationInitialized = true
+        }
     }
 }
 
 
 class WeatherViewModelFactory(
     private val repository: WeatherRepository,
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    private val networkMonitor: NetworkMonitor
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -127,7 +190,8 @@ class WeatherViewModelFactory(
 
             return WeatherViewModel(
                 repository,
-                settingsDataStore
+                settingsDataStore,
+                networkMonitor
             ) as T
         }
 
