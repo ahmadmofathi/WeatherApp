@@ -1,6 +1,7 @@
 package com.example.weatherapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -15,6 +16,7 @@ import com.example.weatherapp.ui.favorites.FavoritesScreen
 import com.example.weatherapp.ui.home.HomeScreen
 import com.example.weatherapp.ui.map.MapScreen
 import com.example.weatherapp.ui.settings.SettingsScreen
+import com.example.weatherapp.ui.weather.WeatherScreen
 import com.example.weatherapp.utils.scheduleWeatherAlerts
 import com.example.weatherapp.viewmodel.FavoritesViewModel
 import com.example.weatherapp.viewmodel.SettingsViewModel
@@ -53,7 +55,7 @@ fun AppNavigation(
                     navController.navigate(Screen.Map.route)
                 },
                 onFavoriteClick = { lat, lon ->
-
+                    weatherViewModel.setLocation(lat, lon)
                     weatherViewModel.loadWeather(lat, lon)
 
                     navController.popBackStack()
@@ -70,6 +72,23 @@ fun AppNavigation(
 
                 navController.popBackStack()
             }
+        }
+
+        //SEARCH
+        composable("weatherByName/{city}") { backStackEntry ->
+
+            val city =
+                backStackEntry.arguments?.getString("city")!!
+
+            LaunchedEffect(city) {
+                weatherViewModel.loadWeatherByCity(city)
+            }
+
+            HomeScreen(
+                favoritesViewModel = favoritesViewModel,
+                weatherViewModel = weatherViewModel,
+                navController = navController
+            )
         }
 
 
