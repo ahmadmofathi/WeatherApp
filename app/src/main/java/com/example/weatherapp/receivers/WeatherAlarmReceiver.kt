@@ -43,6 +43,13 @@ class WeatherAlarmReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
+                // ─── CRITICAL FIX: Check if alert is active ───
+                if (!alert.isActive) {
+                    Log.d("WeatherAlarmReceiver", "Alert id=$alertId is INACTIVE — skipping alarm")
+                    pendingResult.finish()
+                    return@launch
+                }
+
                 // Check if alarm is still within its valid time range
                 val now = System.currentTimeMillis()
                 if (now > alert.endTime) {

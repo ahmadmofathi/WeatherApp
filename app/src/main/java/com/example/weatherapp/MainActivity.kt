@@ -1,20 +1,31 @@
 package com.example.weatherapp
 
+import android.Manifest
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.example.weatherapp.data.local.WeatherDatabase
+import com.example.weatherapp.data.local.WeatherLocalDataSourceImpl
 import com.example.weatherapp.data.preferences.SettingsDataStore
 import com.example.weatherapp.data.remote.RetrofitInstance
-import com.example.weatherapp.data.local.WeatherLocalDataSourceImpl
 import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repository.AlertRepository
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
@@ -35,6 +46,15 @@ import org.osmdroid.config.Configuration
 
 class MainActivity : AppCompatActivity() {
 
+    private val requestNotificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission granted
+            } else {
+                // Permission denied
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,6 +65,9 @@ class MainActivity : AppCompatActivity() {
             applicationContext,
             applicationContext.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
         )
+
+        createNotificationChannel()
+        checkAndRequestPermissions()
 
         // Sync DataStore locale with AppCompatDelegate once on startup
         lifecycleScope.launch {
@@ -61,6 +84,54 @@ class MainActivity : AppCompatActivity() {
         setContent {
             WeatherAppTheme {
                 WeatherApp(context = this)
+            }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Weather Alerts"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("weather_alerts", name, importance).apply {
+                description = "Notifications for weather alarms and alerts"
+            }
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun checkAndRequestPermissions() {
+        // 1. Notification Permission (API 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        // 2. Exact Alarm Permission (API 31+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            }
+        }
+
+        // 3. Overlay Permission (for the alarm screen to pop up)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intent)
             }
         }
     }
