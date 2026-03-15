@@ -24,6 +24,7 @@ import com.example.weatherapp.model.WeatherCondition
 import java.text.SimpleDateFormat
 import java.util.*
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AlertsScreen(
     alerts: List<WeatherAlert>,
@@ -116,32 +117,14 @@ fun AlertsScreen(
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        // Condition chips — row 1 (first 5)
+        // Condition chips — wrapping layout
         item {
-            Row(
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                conditions.take(5).forEach { condition ->
-                    FilterChip(
-                        selected = selectedCondition == condition.apiName,
-                        onClick = { selectedCondition = condition.apiName },
-                        label = {
-                            Text("${condition.emoji} ${stringResource(condition.labelResId)}")
-                        },
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Condition chips — row 2 (next 5)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                conditions.drop(5).forEach { condition ->
+                conditions.forEach { condition ->
                     FilterChip(
                         selected = selectedCondition == condition.apiName,
                         onClick = { selectedCondition = condition.apiName },

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
 
@@ -95,25 +96,12 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    com.example.weatherapp.model.WeatherCondition.selectableConditions.take(5).forEach { cond ->
-                        FilterChip(
-                            selected = alertCondition == cond.apiName,
-                            onClick = { onConditionChanged(cond.apiName) },
-                            label = { Text(stringResource(cond.labelResId)) },
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    com.example.weatherapp.model.WeatherCondition.selectableConditions.drop(5).forEach { cond ->
+                    com.example.weatherapp.model.WeatherCondition.selectableConditions.forEach { cond ->
                         FilterChip(
                             selected = alertCondition == cond.apiName,
                             onClick = { onConditionChanged(cond.apiName) },
@@ -134,8 +122,10 @@ fun SettingsScreen(
             title = stringResource(R.string.temperature_unit)
         ) {
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
                 FilterChip(
@@ -170,8 +160,10 @@ fun SettingsScreen(
             title = stringResource(R.string.wind_speed_unit)
         ) {
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
                 FilterChip(
@@ -199,8 +191,10 @@ fun SettingsScreen(
             title = stringResource(R.string.language)
         ) {
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
                 FilterChip(
