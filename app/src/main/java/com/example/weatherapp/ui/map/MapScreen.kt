@@ -13,8 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.weatherapp.R
 import com.google.android.gms.location.LocationServices
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -124,7 +126,7 @@ fun MapScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Select Location")
+            Text(stringResource(R.string.select_from_map))
         }
     }
 }

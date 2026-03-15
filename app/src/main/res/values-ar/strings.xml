@@ -97,4 +97,11 @@
     <string name="condition_detected">تم رصد %s في منطقتك</string>
     <string name="weather_alert_notification_title">تنبيه الطقس</string>
     <string name="condition_expected">%s متوقعة خلال الساعة القادمة</string>
+
+    <!-- الموقع غير متاح -->
+    <string name="location_denied_title">الموقع غير متاح</string>
+    <string name="location_denied_message">فعّل خدمة الموقع لعرض الطقس لموقعك الحالي، أو ابحث عن مدينة يدوياً.</string>
+    <string name="search_for_city">ابحث عن مدينة</string>
+    <string name="pick_on_map">اختر من الخريطة</string>
+    <string name="enable_location">تفعيل الموقع</string>
 </resources>

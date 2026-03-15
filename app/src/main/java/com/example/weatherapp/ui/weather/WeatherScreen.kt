@@ -40,7 +40,10 @@ fun WeatherScreen(
     isFavorite: Boolean,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onToggleFavoriteClick: () -> Unit
+    onToggleFavoriteClick: () -> Unit,
+    onRequestLocation: () -> Unit = {},
+    onGoToSearch: () -> Unit = {},
+    onGoToMap: () -> Unit = {}
 ) {
 
     val state by viewModel.uiState.collectAsState()
@@ -79,6 +82,14 @@ fun WeatherScreen(
             ErrorScreen(
                 message = message,
                 onRetry = { viewModel.reloadWeather() }
+            )
+        }
+
+        is WeatherUiState.LocationDenied -> {
+            LocationDeniedScreen(
+                onSearchClick = onGoToSearch,
+                onMapClick = onGoToMap,
+                onRetryLocation = onRequestLocation
             )
         }
 
@@ -122,6 +133,117 @@ fun WeatherScreen(
                 temperatureUnit = tempUnit,
                 windSpeedUnit = windUnit
             )
+        }
+    }
+}
+
+// ── Location Denied Screen ───────────────────────────────────────────
+
+@Composable
+fun LocationDeniedScreen(
+    onSearchClick: () -> Unit,
+    onMapClick: () -> Unit,
+    onRetryLocation: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF1A237E),
+                        Color(0xFF283593),
+                        Color(0xFF3949AB)
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Location icon
+            Text(
+                text = "📍",
+                style = MaterialTheme.typography.displayLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.location_denied_title),
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                ),
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = stringResource(R.string.location_denied_message),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White.copy(alpha = 0.8f)
+                ),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Search button
+            Button(
+                onClick = onSearchClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF1A237E)
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.search_for_city),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // Map button
+            OutlinedButton(
+                onClick = onMapClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color.White
+                ),
+                border = ButtonDefaults.outlinedButtonBorder.copy(
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.6f),
+                            Color.White.copy(alpha = 0.6f)
+                        )
+                    )
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.pick_on_map),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // Enable location button
+            TextButton(
+                onClick = onRetryLocation
+            ) {
+                Text(
+                    text = stringResource(R.string.enable_location),
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

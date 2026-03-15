@@ -1,6 +1,10 @@
 package com.example.weatherapp.ui.home
 
 import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -11,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.weather.WeatherScreen
@@ -73,18 +79,72 @@ fun HomeScreen(
         ) { granted ->
 
             if (granted) {
-
                 locationHelper.getCurrentLocation { lat, lon ->
                     weatherViewModel.initializeLocation(lat, lon)
                 }
+            } else {
+                // GPS denied — show friendly state instead of infinite loading
+                weatherViewModel.setLocationDenied()
             }
         }
 
-    LaunchedEffect(Unit) {
+    // Track if we have ever launched the permission request in this session
+    var hasRequestedPermission by remember { mutableStateOf(false) }
 
-        locationPermissionLauncher.launch(
+    // Helper to request location or open app settings if permanently denied
+    fun requestLocationOrOpenSettings() {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
             Manifest.permission.ACCESS_FINE_LOCATION
-        )
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            locationHelper.getCurrentLocation { lat, lon ->
+                weatherViewModel.setLocation(lat, lon)
+                weatherViewModel.loadWeather(lat, lon)
+            }
+        } else {
+            val activity = context as? android.app.Activity
+            val shouldShowRationale = activity?.let {
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    it, Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            } ?: false
+
+            if (shouldShowRationale || !hasRequestedPermission) {
+                // System will show the permission dialog
+                hasRequestedPermission = true
+                locationPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            } else {
+                // User permanently denied — open app settings
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", context.packageName, null)
+                )
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // Check if permission is already granted
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            locationHelper.getCurrentLocation { lat, lon ->
+                weatherViewModel.initializeLocation(lat, lon)
+            }
+        } else {
+            hasRequestedPermission = true
+            locationPermissionLauncher.launch(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
     }
 
     ModalNavigationDrawer(
@@ -117,15 +177,10 @@ fun HomeScreen(
                     },
 
                     onMyLocationClick = {
-
-                        locationHelper.getCurrentLocation { lat, lon ->
-
-                            weatherViewModel.setLocation(lat, lon)
-
-                            weatherViewModel.loadWeather(lat, lon)
-                        }
-
                         scope.launch { drawerState.close() }
+
+                        // Use the helper that handles all permission states
+                        requestLocationOrOpenSettings()
                     },
 
                     onSettingsClick = {
@@ -168,6 +223,19 @@ fun HomeScreen(
                         location.first,
                         location.second
                     )
+                },
+
+                onRequestLocation = {
+                    // Use the helper that handles all permission states
+                    requestLocationOrOpenSettings()
+                },
+
+                onGoToSearch = {
+                    navController.navigate("search")
+                },
+
+                onGoToMap = {
+                    navController.navigate("map")
                 }
             )
         }

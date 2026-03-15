@@ -18,4 +18,6 @@ sealed class WeatherUiState {
         val weather: ForecastResponse
     ) : WeatherUiState()
 
+    object LocationDenied : WeatherUiState()
+
 }

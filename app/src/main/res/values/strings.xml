@@ -97,4 +97,11 @@
     <string name="condition_detected">%s detected in your area</string>
     <string name="weather_alert_notification_title">Weather Alert</string>
     <string name="condition_expected">%s expected in the next hour</string>
+
+    <!-- Location Denied -->
+    <string name="location_denied_title">Location Not Available</string>
+    <string name="location_denied_message">Enable GPS to see weather for your current location, or search for a city manually.</string>
+    <string name="search_for_city">Search for a City</string>
+    <string name="pick_on_map">Pick on Map</string>
+    <string name="enable_location">Enable Location</string>
 </resources>

@@ -194,6 +194,13 @@ class WeatherViewModel(
             locationInitialized = true
         }
     }
+
+    fun setLocationDenied() {
+        // Only show denied state if no location has been set yet
+        if (!locationInitialized && _location.value == null) {
+            _uiState.value = WeatherUiState.LocationDenied
+        }
+    }
 }
 
 
