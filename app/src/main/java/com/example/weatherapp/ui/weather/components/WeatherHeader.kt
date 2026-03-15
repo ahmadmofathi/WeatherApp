@@ -117,26 +117,26 @@ fun WeatherHeader(
         Spacer(modifier = Modifier.height(2.dp))
 
         // Location badge
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = null,
-                modifier = Modifier.size(12.dp),
-                tint = Color.White.copy(alpha = 0.5f)
-            )
-
-            Spacer(modifier = Modifier.width(2.dp))
-
-            Text(
-                text = "Current Location",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.White.copy(alpha = 0.5f),
-                    letterSpacing = 1.sp
-                )
-            )
-        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//
+//            Icon(
+//                imageVector = Icons.Default.LocationOn,
+//                contentDescription = null,
+//                modifier = Modifier.size(12.dp),
+//                tint = Color.White.copy(alpha = 0.5f)
+//            )
+//
+//            Spacer(modifier = Modifier.width(2.dp))
+//
+//            Text(
+//                text = "Current Location",
+//                style = MaterialTheme.typography.labelSmall.copy(
+//                    color = Color.White.copy(alpha = 0.5f),
+//                    letterSpacing = 1.sp
+//                )
+//            )
+//        }
     }
 }

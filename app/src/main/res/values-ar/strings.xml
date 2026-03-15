@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">جوو</string>
     <string name="settings">الإعدادات</string>
     <string name="weather_alerts">تنبيهات الطقس</string>
     <string name="temperature_unit">وحدة الحرارة</string>
@@ -15,7 +15,7 @@
     <string name="menu_settings">الإعدادات</string>
     <string name="menu_alerts">تنبيهات الطقس</string>
     <string name="menu_search">بحث</string>
-    <string name="app_name">تطبيق الطقس</string>
+    <string name="app_name">جوو</string>
     <string name="my_location">موقعي</string>
     <string name="favorites">المفضلة</string>
     <string name="alerts">التنبيهات</string>
@@ -32,7 +32,7 @@
     <string name="alert_condition">نوع التنبيه</string>
     <string name="rain">مطر</string>
     <string name="snow">ثلج</string>
-    <string name="clear">صحو</string>
+    <string name="clear">صافي</string>
 
     <!-- شاشة التنبيهات -->
     <string name="create_weather_alarm">إنشاء تنبيه طقس</string>
